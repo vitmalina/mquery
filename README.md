@@ -42,3 +42,14 @@ Build process only uglifies JS and puts it into `/dist` folder. To run it do
 npm i
 gulp build
 ```
+
+## Usage
+
+Since it is a ES6 modules compatible library, it can only be used as ES6 module.
+
+```
+import $ from 'mquery.js'
+
+$('.span').css('border', '1px solid red')
+...
+```
