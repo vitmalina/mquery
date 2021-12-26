@@ -47,7 +47,7 @@ gulp build
 
 Since it is a ES6 modules compatible library, it can only be used as ES6 module.
 
-```
+```js
 import $ from 'mquery.js'
 
 $('.span').css('border', '1px solid red')
