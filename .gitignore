@@ -1,0 +1,8 @@
+node_modules/
+/npm-debug.log
+package-lock.json
+dist/w2ui-*.tgz
+.DS_Store
+.idea
+.vscode
+*~

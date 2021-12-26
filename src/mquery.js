@@ -3,7 +3,7 @@
  * methods that start with "_" are internal
  */
 
- class Query {
+class Query {
 
     constructor(selector, context) {
         // TODO: selector within context
@@ -44,7 +44,7 @@
             let doc = this.nodes[0].ownerDocument
             let template = doc.createElement('template')
             this.nodes.forEach(node => {
-                template.innerHTML = html;
+                template.innerHTML = html
                 if (method == 'replaceWith') {
                     newNodes.push(...template.content.childNodes)
                 }
