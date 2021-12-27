@@ -10,15 +10,14 @@
          * No need to implementd (selector, context) as it can be archived by
          * $(context).find(selector)
          */
-        if (selector instanceof DocumentFragment) {
-            this.nodes = [selector]
-            this.length = 1
-        } else if (selector instanceof HTMLElement) {
-            this.nodes = [selector]
-            this.length = 1
-        } else if (selector instanceof Text) {
-            this.nodes = [selector]
-            this.length = 1
+        if (selector instanceof DocumentFragment || selector instanceof HTMLElement || selector instanceof Text) {
+            if (selector.isConnected) {
+                this.nodes = [selector]
+                this.length = 1
+            } else {
+                this.nodes = []
+                this.length = 0
+            }
         } else if (selector instanceof Query) {
             this.nodes = selector.nodes
             this.length = selector.nodes.length
@@ -228,18 +227,6 @@
             })
             return this
         }
-    }
-
-    offset() {
-        if (this.length != 1) {
-            return null
-        }
-        return this.nodes[0] ? {
-            top: this.nodes[0].offsetTop,
-            left: this.nodes[0].offsetLeft,
-            width: this.nodes[0].offsetWidth,
-            height: this.nodes[0].offsetHeight
-        } : undefined
     }
 
     addClass(classes) {
