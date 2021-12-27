@@ -379,6 +379,42 @@
 
     }
 
+    data(key, value) {
+        if (arguments.length < 2) {
+            if (this.nodes[0]) {
+                let data = this.nodes[0]._mQuery.data
+                return key ? data[key] : data
+            } else {
+                return undefined
+            }
+        } else {
+            this.each(node => {
+                node._mQuery = node._mQuery ?? {}
+                node._mQuery.data = node._mQuery.data ?? {}
+                if (value != null) {
+                    node._mQuery.data[key] = value
+                } else {
+                    delete node._mQuery.data[key]
+                }
+            })
+            return this
+        }
+    }
+
+    removeData(key) {
+        this.each(node => {
+            node._mQuery = node._mQuery ?? {}
+            if (arguments.lenth == 0) {
+                node._mQuery.data = {}
+            } else if (key != null && node._mQuery.data) {
+                delete node._mQuery.data[key]
+            } else {
+                node._mQuery.data = {}
+            }
+        })
+        return this
+    }
+
     show() {
         return this.css('display', '')
     }
