@@ -369,7 +369,7 @@
     data(key, value) {
         if (arguments.length < 2) {
             if (this.nodes[0]) {
-                let data = this.nodes[0]._mQuery.data
+                let data = this.nodes[0]._mQuery.data ?? {}
                 return key ? data[key] : data
             } else {
                 return undefined
