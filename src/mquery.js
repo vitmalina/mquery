@@ -3,11 +3,17 @@
  * methods that start with "_" are internal
  */
 
-class Query {
+ class Query {
 
-    constructor(selector, context) {
-        // TODO: selector within context
-        if (selector instanceof HTMLElement) {
+    constructor(selector) {
+        /**
+         * No need to implementd (selector, context) as it can be archived by
+         * $(context).find(selector)
+         */
+        if (selector instanceof DocumentFragment) {
+            this.nodes = [selector]
+            this.length = 1
+        } else if (selector instanceof HTMLElement) {
             this.nodes = [selector]
             this.length = 1
         } else if (selector instanceof Text) {
@@ -63,7 +69,7 @@ class Query {
 
     find(selector) {
         let newNodes = []
-        this.nodes.forEach((node, ind) => {
+        this.nodes.forEach(node => {
             let nodes = node.querySelectorAll(selector)
             if (nodes.length > 0) {
                 newNodes.push(...nodes)
@@ -75,14 +81,41 @@ class Query {
         return this
     }
 
+    eq(index) {
+        let node = this.nodes[index]
+        if (node) {
+            this.nodes = [node]
+            this.length = 1
+        } else {
+            this.nodes = []
+            this.length = 0
+        }
+        this._updateRefs()
+        return this
+    }
+
     closest(selector) {
         let newNodes = []
-        this.nodes.forEach((node, ind) => {
-            let newNode = node.closest(selector)
-            if (newNode) {
-                newNodes.push(newNode)
+        if (selector == ':host') {
+            // find shadow root or body
+            let top = (node) => {
+                if (node.parentNode) {
+                    return top(node.parentNode)
+                } else {
+                    return node
+                }
             }
-        })
+            this.nodes.forEach(node => {
+                newNodes.push(top(node))
+            })
+        } else {
+            this.nodes.forEach(node => {
+                let newNode = node.closest(selector)
+                if (newNode) {
+                    newNodes.push(newNode)
+                }
+            })
+        }
         this.nodes = newNodes
         this.length = newNodes.length
         this._updateRefs()
@@ -91,7 +124,7 @@ class Query {
 
     parent() {
         let newNodes = []
-        this.nodes.forEach((node, ind) => {
+        this.nodes.forEach(node => {
             let newNode = node.parentNode
             if (newNode) {
                 newNodes.push(newNode)
@@ -345,14 +378,12 @@ class Query {
         return this
 
     }
-
 }
 // create a new object each time
 let query = function (selector, context) {
     return new Query(selector, context)
 }
 let $ = query
-let q = query
 
 export default query
-export { $, q, query, Query }
+export { $, query, Query }
