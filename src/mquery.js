@@ -378,6 +378,19 @@
         return this
 
     }
+
+    show() {
+        return this.css('display', '')
+    }
+
+    hide() {
+        return this.css('display', 'none')
+    }
+
+    toggle() {
+        let dsp = this.css('display')
+        return this.css('display', dsp == 'none' ? '' : 'none')
+    }
 }
 // create a new object each time
 let query = function (selector, context) {
