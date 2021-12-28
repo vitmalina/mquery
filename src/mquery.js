@@ -213,8 +213,25 @@
 
     css(key, value) {
         let css = key
-        if (arguments.length == 1 && typeof key == 'string') {
-            return this.nodes[0] ? this.nodes[0].style[key] : undefined
+        let len = arguments.length
+        if (len === 0 || (len ===1 && typeof key == 'string')) {
+            if (this.nodes[0]) {
+                // do not do computedStyleMap as it is not what on immediate element
+                if (typeof key == 'string') {
+                    return this.nodes[0].style[key]
+                } else {
+                    return Object.fromEntries(
+                        this.nodes[0].style.cssText
+                            .split(';')
+                            .filter(a => !!a) // filter non-empty
+                            .map(a => {
+                                return a.split(':').map(a => a.trim()) // trim strings
+                            })
+                        )
+                }
+            } else {
+                return undefined
+            }
         } else {
             if (typeof key != 'object') {
                 css = {}
