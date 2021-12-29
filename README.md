@@ -57,7 +57,7 @@ $('#id').off('.custom')
 
 ## The story
 
-Due to reasons outside of my control, I needed to remove jQuery dependency in my projects. I tried to look for a small and elegant library that would allow me to do it painlessly, but could not find one (looked at zepto, cash, umbrella). I also realized that I only use a fraction of jQuery methods and would prefer to use ES6 when available Though, jQuery has been a loyal friend for many years, it has grown old, riddled with methods inmplemented in ES6 and not always elegant as it used to be. So, it is a "good bye".
+Due to reasons outside of my control, I needed to remove jQuery dependency in my projects. I tried to look for a small and elegant library that would allow me to do it painlessly, but could not find one (looked at zepto, cash (!! could have used it), umbrella). I also realized that I only need a fraction of jQuery methods and would prefer to use ES6 when available. Though, jQuery has been a loyal friend for many years, it has grown old, got riddled with methods alternatively implemented in ES6 and not always elegant anymore. So, it is a "good bye".
 
 The goal of this project is to create tiny library that can replace jQuery in projects that historically depended on it. At the same time, I have no desire to implement features already available in ES6, which will make this new library not fully compatible with jQuery.
 
