@@ -13,6 +13,8 @@ document.querySelectorAll('a').forEach((a) => {
     a.classList.add('custom')
 })
 
+// ----------------
+
 // jQuery / mQuery
 $('a').addClass('custom')
 ```
@@ -24,6 +26,8 @@ document.querySelectorAll('a').forEach((a) => {
     a.setAttribute('id', 'some_id')
     a.setAttribute('name', 'some_name')
 })
+
+// ----------------
 
 // jQuery / mQuery
 $('a').attr({ id: 'some_id', name: 'some_name' })
@@ -40,6 +44,8 @@ document.querySelector('#id')
 // ...
 document.querySelector('#id')
     .removeEventListener('click', handler, { preview: true })
+
+// ----------------
 
 // jQuery / mQuery
 $('#id').on('click.custom', { preview: true }, (event) => {
