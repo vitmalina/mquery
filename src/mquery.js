@@ -6,11 +6,15 @@
  class Query {
 
     constructor(selector) {
+        this.version = 0.1
         /**
          * No need to implementd (selector, context) as it can be archived by
          * $(context).find(selector)
          */
-        if (selector instanceof DocumentFragment || selector instanceof HTMLElement || selector instanceof Text) {
+        if (Array.isArray(selector)) {
+            this.nodes  = selector
+            this.length = selector.length
+        } else if (selector instanceof DocumentFragment || selector instanceof HTMLElement || selector instanceof Text) {
             if (selector.isConnected) {
                 this.nodes = [selector]
                 this.length = 1
@@ -23,7 +27,7 @@
             this.length = selector.nodes.length
         } else if (typeof selector == 'string') {
             let nodes = document.querySelectorAll(selector)
-            this.nodes = nodes
+            this.nodes = Array.from(nodes)
             this.length = nodes.length
         } else {
             throw new Error('Unknown selector')
@@ -66,6 +70,27 @@
         return this
     }
 
+    eq(index) {
+        let node = this.nodes[index]
+        if (node) {
+            this.nodes = [node]
+            this.length = 1
+        } else {
+            this.nodes = []
+            this.length = 0
+        }
+        this._updateRefs()
+        return this
+    }
+
+    get(index) {
+        let node = this.nodes[index]
+        if (node) {
+            return node
+        }
+        return this.nodes
+    }
+
     find(selector) {
         let newNodes = []
         this.nodes.forEach(node => {
@@ -76,19 +101,6 @@
         })
         this.nodes = newNodes
         this.length = newNodes.length
-        this._updateRefs()
-        return this
-    }
-
-    eq(index) {
-        let node = this.nodes[index]
-        if (node) {
-            this.nodes = [node]
-            this.length = 1
-        } else {
-            this.nodes = []
-            this.length = 0
-        }
         this._updateRefs()
         return this
     }
@@ -386,7 +398,20 @@
     data(key, value) {
         if (arguments.length < 2) {
             if (this.nodes[0]) {
-                let data = this.nodes[0]._mQuery.data ?? {}
+                let data = this.nodes[0]._mQuery?.data ?? {}
+                // also pick all atributes that start with data-*
+                Array.from(this.nodes[0].attributes).forEach(attr => {
+                    if (attr.name.substr(0, 5) == 'data-') {
+                        let val = attr.value
+                        let nm  = attr.name.substr(5)
+                        // if it is JSON - parse it
+                        if (['[', '{'].includes(String(val).substr(0, 1))) {
+                            try { val = JSON.parse(val) } catch(e) { val = attr.value }
+                        }
+                        // attributes have lower priority than set with data()
+                        if (data[nm] === undefined) data[nm] = val
+                    }
+                })
                 return key ? data[key] : data
             } else {
                 return undefined
