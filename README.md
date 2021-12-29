@@ -6,7 +6,7 @@ Modern Query (mQuery) is a small, modern, ES6 modules compatible library for DOM
 
 Consider following samples:
 ```js
-// vanily JS
+// vanilla JS
 document.querySelectorAll('a').forEach((a) => {
     a.classList.add('custom')
 })
@@ -17,28 +17,27 @@ $('a').addClass('custom')
 
 Attributes
 ```js
-// vanily JS
+// vanilla JS
 document.querySelectorAll('a').forEach((a) => {
     a.setAttribute('id', 'some_id)
     a.setAttribute('name', 'some_name)
 })
 
 // jQuery / mQuery
-$('a').attr({
-    id: 'some_id',
-    name: 'some_name'
-})
+$('a').attr({ id: 'some_id', name: 'some_name' })
 ```
 
 Event handling
 ```js
-// vanily JS
+// vanilla JS
 let handler = (event) => {
     // do something
 }
-document.querySelector('#id').addEventListener('click', handler, { preview: true })
-// ....
-document.querySelector('#id').removeEventListener('click', handler, { preview: true })
+document.querySelector('#id')
+    .addEventListener('click', handler, { preview: true })
+// ...
+document.querySelector('#id')
+    .removeEventListener('click', handler, { preview: true })
 
 // jQuery / mQuery
 $('#id').on('click.custom', { preview: true }, (event) => {
