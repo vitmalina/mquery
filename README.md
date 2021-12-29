@@ -1,8 +1,10 @@
 # mQuery
 
-Modern Query (mQuery) is a small, modern, ES6 modules compatible library for DOM manipulation. It will only work with ever-green browsers.
+Modern Query (mQuery) is super, super tiny, modern, ES6 compatible library for DOM manipulation. Ever-green browsers only.
 
 ## Why bother?
+
+Beaseuse I am tired of typing `document.querySelectorAll`, `element.addEventListener`, loop through the nodes when I do not have to, have hard time removing `event handlers` and woring with `data` attached to dom elements, etc.
 
 Consider following samples:
 ```js
