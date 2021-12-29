@@ -343,12 +343,19 @@ class Query {
         return this
     }
 
+    trigger(name, options) {
+        // TODO: Implement
+        return this
+    }
+
     attr(name, value) {
-        if (arguments.length == 1) {
+        if (arguments.length == 1 && typeof name == 'string') {
             return this.nodes[0] ? this.nodes[0].getAttribute() : undefined
         } else {
+            let obj = {}
+            if (typeof name == 'object') obj = name; else obj[name] = value
             this.each(node => {
-                node.setAttribute(name, value)
+                Object.entries(obj).forEach(([nm, val]) => { node.setAttribute(nm, val) })
             })
             return this
         }
@@ -364,25 +371,23 @@ class Query {
     }
 
     prop(name, value) {
-        if (arguments.length == 1) {
+        if (arguments.length == 1 && typeof name == 'string') {
             return this.nodes[0] ? this.nodes[0][name] : undefined
         } else {
+            let obj = {}
+            if (typeof name == 'object') obj = name; else obj[name] = value
             this.each(node => {
-                node[name] = value
+                Object.entries(obj).forEach(([nm, val]) => { node[nm] = val })
             })
             return this
         }
-
     }
 
     removeProp() {
         this.each(node => {
-            Array.from(arguments).forEach(prop => {
-                delete node[prop]
-            })
+            Array.from(arguments).forEach(prop => { delete node[prop] })
         })
         return this
-
     }
 
     data(key, value) {
@@ -453,5 +458,5 @@ let query = function (selector, context) {
 }
 let $ = query
 
-export default query
+export default $
 export { $, query, Query }
