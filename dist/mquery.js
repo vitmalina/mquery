@@ -1,23 +1,32 @@
-/* mQuery 1.0.x (nightly) (12/26/2021, 2:58:08 PM), vitmalina@gmail.com */
+/* mQuery 1.0.x (nightly) (12/28/2021, 9:51:54 PM), vitmalina@gmail.com */
 /**
  * Small library to replace basic functionality of jQuery
  * methods that start with "_" are internal
  */
 class Query {
-    constructor(selector, context) {
-        // TODO: selector within context
-        if (selector instanceof HTMLElement) {
-            this.nodes = [selector]
-            this.length = 1
-        } else if (selector instanceof Text) {
-            this.nodes = [selector]
-            this.length = 1
+    constructor(selector) {
+        this.version = 0.1
+        /**
+         * No need to implementd (selector, context) as it can be archived by
+         * $(context).find(selector)
+         */
+        if (Array.isArray(selector)) {
+            this.nodes  = selector
+            this.length = selector.length
+        } else if (selector instanceof DocumentFragment || selector instanceof HTMLElement || selector instanceof Text) {
+            if (selector.isConnected) {
+                this.nodes = [selector]
+                this.length = 1
+            } else {
+                this.nodes = []
+                this.length = 0
+            }
         } else if (selector instanceof Query) {
             this.nodes = selector.nodes
             this.length = selector.nodes.length
         } else if (typeof selector == 'string') {
             let nodes = document.querySelectorAll(selector)
-            this.nodes = nodes
+            this.nodes = Array.from(nodes)
             this.length = nodes.length
         } else {
             throw new Error('Unknown selector')
@@ -57,9 +66,28 @@ class Query {
         }
         return this
     }
+    eq(index) {
+        let node = this.nodes[index]
+        if (node) {
+            this.nodes = [node]
+            this.length = 1
+        } else {
+            this.nodes = []
+            this.length = 0
+        }
+        this._updateRefs()
+        return this
+    }
+    get(index) {
+        let node = this.nodes[index]
+        if (node) {
+            return node
+        }
+        return this.nodes
+    }
     find(selector) {
         let newNodes = []
-        this.nodes.forEach((node, ind) => {
+        this.nodes.forEach(node => {
             let nodes = node.querySelectorAll(selector)
             if (nodes.length > 0) {
                 newNodes.push(...nodes)
@@ -72,12 +100,26 @@ class Query {
     }
     closest(selector) {
         let newNodes = []
-        this.nodes.forEach((node, ind) => {
-            let newNode = node.closest(selector)
-            if (newNode) {
-                newNodes.push(newNode)
+        if (selector == ':host') {
+            // find shadow root or body
+            let top = (node) => {
+                if (node.parentNode) {
+                    return top(node.parentNode)
+                } else {
+                    return node
+                }
             }
-        })
+            this.nodes.forEach(node => {
+                newNodes.push(top(node))
+            })
+        } else {
+            this.nodes.forEach(node => {
+                let newNode = node.closest(selector)
+                if (newNode) {
+                    newNodes.push(newNode)
+                }
+            })
+        }
         this.nodes = newNodes
         this.length = newNodes.length
         this._updateRefs()
@@ -85,7 +127,7 @@ class Query {
     }
     parent() {
         let newNodes = []
-        this.nodes.forEach((node, ind) => {
+        this.nodes.forEach(node => {
             let newNode = node.parentNode
             if (newNode) {
                 newNodes.push(newNode)
@@ -163,8 +205,25 @@ class Query {
     }
     css(key, value) {
         let css = key
-        if (arguments.length == 1 && typeof key == 'string') {
-            return this.nodes[0] ? this.nodes[0].style[key] : undefined
+        let len = arguments.length
+        if (len === 0 || (len ===1 && typeof key == 'string')) {
+            if (this.nodes[0]) {
+                // do not do computedStyleMap as it is not what on immediate element
+                if (typeof key == 'string') {
+                    return this.nodes[0].style[key]
+                } else {
+                    return Object.fromEntries(
+                        this.nodes[0].style.cssText
+                            .split(';')
+                            .filter(a => !!a) // filter non-empty
+                            .map(a => {
+                                return a.split(':').map(a => a.trim()) // trim strings
+                            })
+                        )
+                }
+            } else {
+                return undefined
+            }
         } else {
             if (typeof key != 'object') {
                 css = {}
@@ -178,46 +237,25 @@ class Query {
             return this
         }
     }
-    offset() {
-        if (this.length != 1) {
-            return null
-        }
-        return this.nodes[0] ? {
-            top: this.nodes[0].offsetTop,
-            left: this.nodes[0].offsetLeft,
-            width: this.nodes[0].offsetWidth,
-            height: this.nodes[0].offsetHeight
-        } : undefined
-    }
     addClass(classes) {
-        if (typeof classes == 'string') {
-            classes = classes.split(' ')
-        }
-        this.each(node => {
-            classes.forEach(className => {
-                if (className !== '') node.classList.add(className)
-            })
-        })
+        this.toggleClass(classes, true)
         return this
     }
     removeClass(classes) {
-        if (typeof classes == 'string') {
-            classes = classes.split(' ')
-        }
-        this.each(node => {
-            classes.forEach(className => {
-                if (className !== '') node.classList.remove(className)
-            })
-        })
+        this.toggleClass(classes, false)
         return this
     }
-    toggleClass(classes) {
+    toggleClass(classes, force) {
         if (typeof classes == 'string') {
             classes = classes.split(' ')
         }
         this.each(node => {
             classes.forEach(className => {
-                if (className !== '') node.classList.toggle(className)
+                if (className !== '') {
+                    let act = 'toggle'
+                    if (force != null) act = force ? 'add' : 'remove'
+                    node.classList[act](className)
+                }
             })
         })
         return this
@@ -314,12 +352,68 @@ class Query {
         })
         return this
     }
+    data(key, value) {
+        if (arguments.length < 2) {
+            if (this.nodes[0]) {
+                let data = this.nodes[0]._mQuery?.data ?? {}
+                // also pick all atributes that start with data-*
+                Array.from(this.nodes[0].attributes).forEach(attr => {
+                    if (attr.name.substr(0, 5) == 'data-') {
+                        let val = attr.value
+                        let nm  = attr.name.substr(5)
+                        // if it is JSON - parse it
+                        if (['[', '{'].includes(String(val).substr(0, 1))) {
+                            try { val = JSON.parse(val) } catch(e) { val = attr.value }
+                        }
+                        // attributes have lower priority than set with data()
+                        if (data[nm] === undefined) data[nm] = val
+                    }
+                })
+                return key ? data[key] : data
+            } else {
+                return undefined
+            }
+        } else {
+            this.each(node => {
+                node._mQuery = node._mQuery ?? {}
+                node._mQuery.data = node._mQuery.data ?? {}
+                if (value != null) {
+                    node._mQuery.data[key] = value
+                } else {
+                    delete node._mQuery.data[key]
+                }
+            })
+            return this
+        }
+    }
+    removeData(key) {
+        this.each(node => {
+            node._mQuery = node._mQuery ?? {}
+            if (arguments.lenth == 0) {
+                node._mQuery.data = {}
+            } else if (key != null && node._mQuery.data) {
+                delete node._mQuery.data[key]
+            } else {
+                node._mQuery.data = {}
+            }
+        })
+        return this
+    }
+    show() {
+        return this.css('display', '')
+    }
+    hide() {
+        return this.css('display', 'none')
+    }
+    toggle() {
+        let dsp = this.css('display')
+        return this.css('display', dsp == 'none' ? '' : 'none')
+    }
 }
 // create a new object each time
 let query = function (selector, context) {
     return new Query(selector, context)
 }
 let $ = query
-let q = query
 export default query
-export { $, q, query, Query }
+export { $, query, Query }

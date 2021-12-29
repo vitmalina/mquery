@@ -3,7 +3,7 @@
  * methods that start with "_" are internal
  */
 
- class Query {
+class Query {
 
     constructor(selector) {
         this.version = 0.1
@@ -259,36 +259,26 @@
     }
 
     addClass(classes) {
-        if (typeof classes == 'string') {
-            classes = classes.split(' ')
-        }
-        this.each(node => {
-            classes.forEach(className => {
-                if (className !== '') node.classList.add(className)
-            })
-        })
+        this.toggleClass(classes, true)
         return this
     }
 
     removeClass(classes) {
-        if (typeof classes == 'string') {
-            classes = classes.split(' ')
-        }
-        this.each(node => {
-            classes.forEach(className => {
-                if (className !== '') node.classList.remove(className)
-            })
-        })
+        this.toggleClass(classes, false)
         return this
     }
 
-    toggleClass(classes) {
+    toggleClass(classes, force) {
         if (typeof classes == 'string') {
             classes = classes.split(' ')
         }
         this.each(node => {
             classes.forEach(className => {
-                if (className !== '') node.classList.toggle(className)
+                if (className !== '') {
+                    let act = 'toggle'
+                    if (force != null) act = force ? 'add' : 'remove'
+                    node.classList[act](className)
+                }
             })
         })
         return this
