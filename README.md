@@ -68,7 +68,7 @@ The goal of this project is to create tiny library that can replace jQuery in pr
 - [UmbrellaJS](https://umbrellajs.com/) - 2.5 kb gzipped,
 - [mQuery](https://github.com/vitmalina/mquery) ~ 1 kb gzipped, minimalistic, easy to integrated into your library
 
-I likes Cash, and if I need something closer to jQuery, I would probably use it.
+I liked Cash, and if I need something closer to jQuery, I would probably use it.
 
 ## The core principals
 
