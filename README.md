@@ -2,6 +2,8 @@
 
 Modern Query (mQuery) is super, super tiny, modern, ES6 compatible library for DOM manipulation. Ever-green browsers only.
 
+[Download](https://raw.githubusercontent.com/vitmalina/mquery/main/dist/mquery.min.js)
+
 ## Why bother?
 
 Because I am tired of typing `document.querySelectorAll`, `element.addEventListener`, loop through the nodes when I do not have to, have hard time removing `event handlers` and working with `data` attached to dom elements, etc.... and because people frown upon jQuery.
