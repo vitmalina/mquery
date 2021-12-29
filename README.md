@@ -2,16 +2,71 @@
 
 Modern Query (mQuery) is a small, modern, ES6 modules compatible library for DOM manipulation. It will only work with ever-green browsers.
 
+## Why bother?
+
+Consider following samples:
+```js
+// vanily JS
+document.querySelectorAll('a').forEach((a) => {
+    a.classList.add('custom')
+})
+
+// jQuery / mQuery
+$('a').addClass('custom')
+```
+
+Attributes
+```js
+// vanily JS
+document.querySelectorAll('a').forEach((a) => {
+    a.setAttribute('id', 'some_id)
+    a.setAttribute('name', 'some_name)
+})
+
+// jQuery / mQuery
+$('a').attr({
+    id: 'some_id',
+    name: 'some_name'
+})
+```
+
+Event handling
+```js
+// vanily JS
+let handler = (event) => {
+    // do something
+}
+document.querySelector('#id').addEventListener('click', handler, { preview: true })
+// ....
+document.querySelector('#id').removeEventListener('click', handler, { preview: true })
+
+// jQuery / mQuery
+$('#id').on('click.custom', { preview: true }, (event) => {
+    // do something
+})
+// ...
+$('#id').off('.custom')
+```
+
 ## The story
 
-Due to reasons outside of my control, I needed to remove jQuery dependency in my projects. I tried to look for a small and elegant library that would allow me to do it painlessly, but could not find one (looked at zepto, seemed too big and not very clean API). I also realized that I only use a fraction of jQuery methods and would prefer to use ES6 when available Though, jQuery has been a loyal friend for many years, it has grown old, riddled with methods inmplemented in ES6 and not always elegant as it used to be. So, it is a "good bye" for now.
+Due to reasons outside of my control, I needed to remove jQuery dependency in my projects. I tried to look for a small and elegant library that would allow me to do it painlessly, but could not find one (looked at zepto, cash, umbrella). I also realized that I only use a fraction of jQuery methods and would prefer to use ES6 when available Though, jQuery has been a loyal friend for many years, it has grown old, riddled with methods inmplemented in ES6 and not always elegant as it used to be. So, it is a "good bye" for now.
 
 The goal of this project is to create tiny library that can replace jQuery in projects that historically depended on it. At the same time, I have no desire to implement features already available in ES6, which will make this new library not fully compatible with jQuery.
+
+## Alternatives
+
+- [Cash](https://github.com/fabiospampinato/cash) - 6 kb gzipped, clean syntax, more jQuery compatible
+- [Zepto](https://zeptojs.com/) - 9.8 kb gzipped, old API, no active suppport
+- [UmbrellasJS](https://umbrellajs.com/) - 2.5 kb gzipped,
+- [mQuery](https://github.com/vitmalina/mquery) ~ 1 kb gzipped, minimalistic, easy to integrated into your library
 
 ## The core principals
 
 - Use querySelectorAll instead of sizzle
-- Do not implement features already available in ES6, (ajax, extend, dom traversal, etc)
+- Don't implement jQuery utility functions (ajax, animation, extend, etc.)
+- Don't implement what's easy in ES6
+- Make it as small as possible to easily include in larger projects
 - No need to be fully compatibile with jQuery
 - Chaining is powerfull and cool
 
