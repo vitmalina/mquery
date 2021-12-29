@@ -3,7 +3,7 @@
 Modern Query (mQuery) is super, super tiny, modern, ES6 compatible library for DOM manipulation. Ever-green browsers only.
 
 ```js
-import $ from 'https://raw.githubusercontent.com/vitmalina/mquery/main/dist/mquery.min.js'
+import $ from 'https://raw.githubusercontent.com/vitmalina/mquery/main/dist/mquery.js'
 // ...
 ```
 
