@@ -65,8 +65,8 @@ The goal of this project is to create tiny library that can replace jQuery in pr
 
 - [Cash](https://github.com/fabiospampinato/cash) - 6 kb gzipped, clean syntax, more jQuery compatible
 - [Zepto](https://zeptojs.com/) - 9.8 kb gzipped, old API, no active suppport
-- [UmbrellaJS](https://umbrellajs.com/) - 2.5 kb gzipped,
-- [mQuery](https://github.com/vitmalina/mquery) ~ 1 kb gzipped, minimalistic, easy to integrated into your library
+- [UmbrellaJS](https://umbrellajs.com/) - 2.5 kb gzipped, API not always to my liking
+- [mQuery](https://github.com/vitmalina/mquery) ~ 1.8 kb gzipped, minimalistic, easy to integrated into your library
 
 I liked Cash, and if I need something closer to jQuery, I would probably use it.
 
