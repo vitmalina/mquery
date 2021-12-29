@@ -19,8 +19,8 @@ Attributes
 ```js
 // vanilla JS
 document.querySelectorAll('a').forEach((a) => {
-    a.setAttribute('id', 'some_id)
-    a.setAttribute('name', 'some_name)
+    a.setAttribute('id', 'some_id')
+    a.setAttribute('name', 'some_name')
 })
 
 // jQuery / mQuery
@@ -57,15 +57,17 @@ The goal of this project is to create tiny library that can replace jQuery in pr
 
 - [Cash](https://github.com/fabiospampinato/cash) - 6 kb gzipped, clean syntax, more jQuery compatible
 - [Zepto](https://zeptojs.com/) - 9.8 kb gzipped, old API, no active suppport
-- [UmbrellasJS](https://umbrellajs.com/) - 2.5 kb gzipped,
+- [UmbrellaJS](https://umbrellajs.com/) - 2.5 kb gzipped,
 - [mQuery](https://github.com/vitmalina/mquery) ~ 1 kb gzipped, minimalistic, easy to integrated into your library
+
+I likes Cash, and if I need something closer to jQuery, I would probably use it.
 
 ## The core principals
 
 - Use querySelectorAll instead of sizzle
 - Don't implement jQuery utility functions (ajax, animation, extend, etc.)
 - Don't implement what's easy in ES6
-- Make it as small as possible to easily include in larger projects
+- Make it as small as possible to "inline" into your project
 - No need to be fully compatibile with jQuery
 - Chaining is powerfull and cool
 
