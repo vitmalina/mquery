@@ -143,17 +143,17 @@ $(HTMLElement) // => collection
 
 ### Methods
 
-| Collectio | Attribute/Property | Change | DOM | Events | Shorthand |
-| --------- | ------------------ | ------ | --- | ------ | --------- |
-| [find()](#find-)       | [attr()](#attr-)               | [after()](#after-)     | [on()](#on-)           | [val()](#val-)       |
-| [closest()](#closest-) | [removeAttr()](#removeattr-)   | [before()](#before-)   | [off()](#off-)         | [data()](#data-)     |
-| [shadow()](#shadow-)   | [prop()](#prop-)               | [append()](#append-)   | [trigger()](#trigger-) | [show()](#show-)     |
-| [eq()](#eq-)           | [removeProp()](#removeprop-)   | [prepend()](#prepend-) |                        | [hide()](#hide-)     |
-| [get()](#get-)         | [css()](#css-)                 | [replace()](#replace-) |                        | [toggle()](#toggle-) |
-| [each()](#each-)       | [addClass()](#addclass-)       | [remove()](#remove-)   |
-|                        | [removeClass()](#removeclass-) | [empty()](#empty-)     |
-|                        | [hasClass()](#hasclass-)       | [html()](#html-)       |
-|                        | [toggleClass()](#toggleclass-) | [text()](#text-)       |
+| Collection | Attribute/Property | Change DOM | Events | Short-hand |
+| ---------- | ------------------ | ---------- | ------ | --------- |
+| [find()](#find)       | [attr()](#attr)               | [after()](#after)     | [on()](#on)           | [val()](#val)       |
+| [closest()](#closest) | [removeAttr()](#removeattr)   | [before()](#before)   | [off()](#off)         | [data()](#data)     |
+| [shadow()](#shadow)   | [prop()](#prop)               | [append()](#append)   | [trigger()](#trigger) | [show()](#show)     |
+| [eq()](#eq)           | [removeProp()](#removeprop)   | [prepend()](#prepend) |                       | [hide()](#hide)     |
+| [get()](#get)         | [css()](#css)                 | [replace()](#replace) |                       | [toggle()](#toggle) |
+| [each()](#each)       | [addClass()](#addclass)       | [remove()](#remove)   |
+|                       | [removeClass()](#removeclass) | [empty()](#empty)     |
+|                       | [hasClass()](#hasclass)       | [html()](#html)       |
+|                       | [toggleClass()](#toggleclass) | [text()](#text)       |
 
 
 #### find()
