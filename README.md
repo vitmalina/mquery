@@ -155,10 +155,11 @@ $(HTMLElement) // => collection
 |                       | [hasClass()](#hasclass)       | [html()](#html)       |
 |                       | [toggleClass()](#toggleclass) | [text()](#text)       |
 
+### Collection
 
 #### find()
 
-Returns selector matched descendants.
+Returns selector matched descendants of each node.
 
 ```js
 $(element).find(selector) // => collection
@@ -166,7 +167,7 @@ $(element).find(selector) // => collection
 
 #### closest()
 
-Returns the selector matched parents up the DOM tree.
+Returns the selector matched parent up the DOM tree.
 
 ```js
 $(element).closest(selector) // => collection
@@ -174,7 +175,7 @@ $(element).closest(selector) // => collection
 
 #### shadow()
 
-Returns selector match discendents piersing shadowRoot of the element.
+Returns selector match discendents piersing shadowRoot of nodes.
 
 ```js
 $(element).shad0w(selector) // => collection
@@ -182,7 +183,7 @@ $(element).shad0w(selector) // => collection
 
 #### eq()
 
-Returns a collection with the element at index.
+Returns a collection with the element at the index.
 
 ```js
 $(element).eq(index) // => collection
@@ -204,3 +205,5 @@ Iterates over a collection with `callback(element, index, mQuery)`.
 ```js
 $(element).each(callback) // => collection
 ```
+
+### Attribute/Property
