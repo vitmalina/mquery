@@ -1,43 +1,41 @@
-/* mQuery 1.0.x (nightly) (12/28/2021, 9:51:54 PM), vitmalina@gmail.com */
+/* mQuery 1.0.x (nightly) (12/29/2021, 9:11:08 PM), vitmalina@gmail.com */
 /**
  * Small library to replace basic functionality of jQuery
  * methods that start with "_" are internal
  */
-class Query {
+ class Query {
     constructor(selector) {
         this.version = 0.1
         /**
          * No need to implementd (selector, context) as it can be archived by
          * $(context).find(selector)
          */
+        let nodes = []
         if (Array.isArray(selector)) {
-            this.nodes  = selector
-            this.length = selector.length
+            nodes  = selector
         } else if (selector instanceof DocumentFragment || selector instanceof HTMLElement || selector instanceof Text) {
             if (selector.isConnected) {
-                this.nodes = [selector]
-                this.length = 1
+                nodes = [selector]
             } else {
-                this.nodes = []
-                this.length = 0
+                nodes = []
             }
         } else if (selector instanceof Query) {
-            this.nodes = selector.nodes
-            this.length = selector.nodes.length
+            nodes = selector.nodes
         } else if (typeof selector == 'string') {
-            let nodes = document.querySelectorAll(selector)
-            this.nodes = Array.from(nodes)
-            this.length = nodes.length
+            nodes = Array.from(document.querySelectorAll(selector))
         } else {
             throw new Error('Unknown selector')
         }
-        this._updateRefs()
+        this._refs(nodes)
     }
-    _updateRefs() {
+    _refs(nodes) {
+        this.nodes = nodes
+        this.length = nodes.length
         // map nodes to object propoerties
-        this.nodes.forEach((node, ind) => {
+        this.each((node, ind) => {
             this[ind] = node
         })
+        // delete extra ones
         let ind = this.nodes.length
         while (this[ind]) {
             delete this[ind]
@@ -45,21 +43,20 @@ class Query {
         }
     }
     _insert(method, html) {
-        let newNodes = []
+        let nodes = []
         if (typeof html == 'string') {
             let doc = this.nodes[0].ownerDocument
             let template = doc.createElement('template')
-            this.nodes.forEach(node => {
+            this.each(node => {
                 template.innerHTML = html
                 if (method == 'replaceWith') {
-                    newNodes.push(...template.content.childNodes)
+                    // replace nodes, but keep reference to them
+                    nodes.push(...template.content.childNodes)
                 }
                 node[method](template.content) // inserts nodes or text
             })
             if (method == 'replaceWith') {
-                this.nodes = newNodes
-                this.length = newNodes.length
-                this._updateRefs()
+                this._refs(nodes)
             }
         } else {
             throw new Error(`Incorrect argument for "${method}(html)". It expects one string argument.`)
@@ -67,15 +64,9 @@ class Query {
         return this
     }
     eq(index) {
-        let node = this.nodes[index]
-        if (node) {
-            this.nodes = [node]
-            this.length = 1
-        } else {
-            this.nodes = []
-            this.length = 0
-        }
-        this._updateRefs()
+        let nodes = [this.nodes[index]]
+        if (nodes[0] == null) nodes = []
+        this._refs(nodes)
         return this
     }
     get(index) {
@@ -86,20 +77,30 @@ class Query {
         return this.nodes
     }
     find(selector) {
-        let newNodes = []
-        this.nodes.forEach(node => {
-            let nodes = node.querySelectorAll(selector)
-            if (nodes.length > 0) {
-                newNodes.push(...nodes)
+        let nodes = []
+        this.each(node => {
+            let nn = Array.from(node.querySelectorAll(selector))
+            if (nn.length > 0) {
+                nodes.push(...nn)
             }
         })
-        this.nodes = newNodes
-        this.length = newNodes.length
-        this._updateRefs()
+        this._refs(nodes)
+        return this
+    }
+    shadow(selector) {
+        let nodes = []
+        this.each(node => {
+            // select shadow root if available
+            if (node.shadowRoot) nodes.push(node.shadowRoot)
+        })
+        this._refs(nodes)
+        if (selector) {
+            return this.find(selector)
+        }
         return this
     }
     closest(selector) {
-        let newNodes = []
+        let nodes = []
         if (selector == ':host') {
             // find shadow root or body
             let top = (node) => {
@@ -109,37 +110,33 @@ class Query {
                     return node
                 }
             }
-            this.nodes.forEach(node => {
-                newNodes.push(top(node))
+            this.each(node => {
+                nodes.push(top(node))
             })
         } else {
-            this.nodes.forEach(node => {
-                let newNode = node.closest(selector)
-                if (newNode) {
-                    newNodes.push(newNode)
+            this.each(node => {
+                let nn = node.closest(selector)
+                if (nn) {
+                    nodes.push(nn)
                 }
             })
         }
-        this.nodes = newNodes
-        this.length = newNodes.length
-        this._updateRefs()
+        this._refs(nodes)
         return this
     }
     parent() {
-        let newNodes = []
-        this.nodes.forEach(node => {
-            let newNode = node.parentNode
-            if (newNode) {
-                newNodes.push(newNode)
+        let nodes = []
+        this.each(node => {
+            let nodes = node.parentNode
+            if (node) {
+                nodes.push(node)
             }
         })
-        this.nodes = newNodes
-        this.length = newNodes.length
-        this._updateRefs()
+        this._refs(nodes)
         return this
     }
     each(func) {
-        this.nodes.forEach((node, ind) => { func(node, ind) })
+        this.nodes.forEach((node, ind) => { func(node, ind, this) })
         return this
     }
     append(html) {
@@ -155,53 +152,25 @@ class Query {
         // updates this.nodes with replaced items
         return this._insert('before', html)
     }
+    replace(html) {
+        return this._insert('replaceWith', html)
+    }
     remove() {
-        // remove from dom, but keep in current object
+        // remove from dom, but keep in current query
         this.each(node => { node.remove() })
         return this
     }
     empty() {
-        // remove all children
-        this.each(node => {
-            for (let i = node.childNodes.length - 1; i >= 0; i--) {
-                let child = node.childNodes[i]
-                node.removeChild(child)
-            }
-        })
-        return this
-    }
-    replace(html) {
-        return this._insert('replaceWith', html)
+        return this.html('')
     }
     html(html) {
-        if (arguments.length == 0) {
-            return this.nodes[0] ? this.nodes[0].innerHTML : undefined
-        } else {
-            this.each(node => {
-                node.innerHTML = html
-            })
-            return this
-        }
+        return this.prop('innerHTML', html)
     }
     text(text) {
-        if (arguments.length == 0) {
-            return this.nodes[0] ? this.nodes[0].textContent : undefined
-        } else {
-            this.each(node => {
-                node.textContent = text
-            })
-            return this
-        }
+        return this.prop('textContent', text)
     }
     val(value) {
-        if (arguments.length == 0) {
-            return this.nodes[0] ? this.nodes[0].value : undefined
-        } else {
-            this.each(node => {
-                node.setAttribute('value', value)
-            })
-            return this
-        }
+        return this.attr('value', value)
     }
     css(key, value) {
         let css = key
@@ -316,12 +285,18 @@ class Query {
         })
         return this
     }
+    trigger(name, options) {
+        // TODO: Implement
+        return this
+    }
     attr(name, value) {
-        if (arguments.length == 1) {
-            return this.nodes[0] ? this.nodes[0].getAttribute() : undefined
+        if (value === undefined && typeof name == 'string') {
+            return this.nodes[0] ? this.nodes[0].getAttribute(name) : undefined
         } else {
+            let obj = {}
+            if (typeof name == 'object') obj = name; else obj[name] = value
             this.each(node => {
-                node.setAttribute(name, value)
+                Object.entries(obj).forEach(([nm, val]) => { node.setAttribute(nm, val) })
             })
             return this
         }
@@ -335,20 +310,20 @@ class Query {
         return this
     }
     prop(name, value) {
-        if (arguments.length == 1) {
+        if (value === undefined && typeof name == 'string') {
             return this.nodes[0] ? this.nodes[0][name] : undefined
         } else {
+            let obj = {}
+            if (typeof name == 'object') obj = name; else obj[name] = value
             this.each(node => {
-                node[name] = value
+                Object.entries(obj).forEach(([nm, val]) => { node[nm] = val })
             })
             return this
         }
     }
     removeProp() {
         this.each(node => {
-            Array.from(arguments).forEach(prop => {
-                delete node[prop]
-            })
+            Array.from(arguments).forEach(prop => { delete node[prop] })
         })
         return this
     }
@@ -415,5 +390,5 @@ let query = function (selector, context) {
     return new Query(selector, context)
 }
 let $ = query
-export default query
+export default $
 export { $, query, Query }
