@@ -175,7 +175,7 @@ $(element).closest(selector) // => collection
 
 #### shadow()
 
-Returns selector match discendents piersing shadowRoot of nodes.
+Returns selector match discendents piersing shadowRoot of each node.
 
 ```js
 $(element).shad0w(selector) // => collection
@@ -207,3 +207,53 @@ $(element).each(callback) // => collection
 ```
 
 ### Attribute/Property
+
+#### attr()
+
+Without `value`, returns the attribute value of the first element in the collection.
+
+With `value`, sets the attribute value of each element of the collection.
+
+With `object({ attr, value })`, sets each attribue with corresponding value
+
+```js
+$(element).attr(attr) // => value
+$(element).attr(attr, value) // => collection
+$(element).attr(object) // => collection
+```
+
+#### removeAttr()
+
+Removes attribute from each nodes.
+
+Accepts space-separated `attr` for removing multiple attributes.
+
+```js
+$(element).removeAttr(attr) // => collection
+$(element).removeAttr(attr1, attr2, ...) // => collection
+```
+
+#### prop()
+
+Without `value`, returns the property value of the first element in the collection.
+
+With `value`, sets the property value of each element of the collection.
+
+With `object({ attr, value })`, sets each attribue with corresponding value
+
+```js
+$(element).prop(prop) // => value
+$(element).prop(prop, value) // => collection
+$(element).prop(object) // => collection
+```
+
+#### removeProp()
+
+Removes property from each nodes.
+
+Accepts space-separated `attr` for removing multiple attributes.
+
+```js
+$(element).removeProp(prop) // => collection
+$(element).removeProp(prop1, prop2, ...) // => collection
+```
