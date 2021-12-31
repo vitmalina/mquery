@@ -147,12 +147,12 @@ $(HTMLElement) // => collection
 | Collection | Attribute/Property | Change DOM | Events | Short-hand |
 | ---------- | ------------------ | ---------- | ------ | --------- |
 | [find()](#find)       | [attr()](#attr)               | [after()](#after)     | [on()](#on)           | [val()](#val)       |
-| [closest()](#closest) | [removeAttr()](#removeattr)   | [before()](#before)   | [off()](#off)         | [data()](#data)     |
-| [shadow()](#shadow)   | [prop()](#prop)               | [append()](#append)   | [trigger()](#trigger) | [show()](#show)     |
-| [eq()](#eq)           | [removeProp()](#removeprop)   | [prepend()](#prepend) |                       | [hide()](#hide)     |
+| [shadow()](#shadow)   | [removeAttr()](#removeattr)   | [before()](#before)   | [off()](#off)         | [data()](#data)     |
+| [closest()](#closest) | [prop()](#prop)               | [append()](#append)   | [trigger()](#trigger) | [show()](#show)     |
+| [host()](#host)       | [removeProp()](#removeprop)   | [prepend()](#prepend) |                       | [hide()](#hide)     |
 | [get()](#get)         | [css()](#css)                 | [replace()](#replace) |                       | [toggle()](#toggle) |
-| [each()](#each)       | [addClass()](#addclass)       | [remove()](#remove)   |
-|                       | [removeClass()](#removeclass) | [empty()](#empty)     |
+| [eq()](#eq)           | [addClass()](#addclass)       | [remove()](#remove)   |
+| [each()](#each)       | [removeClass()](#removeclass) | [empty()](#empty)     |
 |                       | [hasClass()](#hasclass)       | [html()](#html)       |
 |                       | [toggleClass()](#toggleclass) | [text()](#text)       |
 
@@ -166,6 +166,14 @@ Returns selector matched descendants of each node.
 $(element).find(selector) // => collection
 ```
 
+#### shadow()
+
+Returns selector matched discendents piersing shadowRoot of each node.
+
+```js
+$(element).shadow(selector) // => collection
+```
+
 #### closest()
 
 Returns the selector matched parent up the DOM tree.
@@ -174,12 +182,15 @@ Returns the selector matched parent up the DOM tree.
 $(element).closest(selector) // => collection
 ```
 
-#### shadow()
+#### host()
 
-Returns selector match discendents piersing shadowRoot of each node.
+Returns host element for each element. Host element is a custom web component or a document.
+
+If `true` is provided, it returns a collection of all hosts up to the document.
 
 ```js
-$(element).shad0w(selector) // => collection
+$(element).host() // => collection
+$(element).host(true) // => collection
 ```
 
 #### eq()

@@ -109,36 +109,38 @@
 
     closest(selector) {
         let nodes = []
-        if (selector == ':host') {
-            // find shadow root or body
-            let top = (node) => {
-                if (node.parentNode) {
-                    return top(node.parentNode)
-                } else {
-                    return node
-                }
+        this.each(node => {
+            let nn = node.closest(selector)
+            if (nn) {
+                nodes.push(nn)
             }
-            this.each(node => {
-                nodes.push(top(node))
-            })
-        } else {
-            this.each(node => {
-                let nn = node.closest(selector)
-                if (nn) {
-                    nodes.push(nn)
-                }
-            })
-        }
+        })
         this._refs(nodes)
         return this
     }
 
-    parent() {
+    // host()
+    // host(all)
+    host(all) {
         let nodes = []
+        // find shadow root or body
+        let top = (node) => {
+            if (node.parentNode) {
+                return top(node.parentNode)
+            } else {
+                return node
+            }
+        }
         this.each(node => {
-            let nodes = node.parentNode
-            if (node) {
-                nodes.push(node)
+            if (all) {
+                let fun = (node) => {
+                    let nn = top(node)
+                    nodes.push(nn.host ? nn.host : nn)
+                    if (nn.host) fun(nn.host)
+                }
+                fun(node)
+            } else {
+                nodes.push(top(node).host)
             }
         })
         this._refs(nodes)
