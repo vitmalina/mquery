@@ -132,16 +132,12 @@
             }
         }
         this.each(node => {
-            if (all) {
-                let fun = (node) => {
-                    let nn = top(node)
-                    nodes.push(nn.host ? nn.host : nn)
-                    if (nn.host) fun(nn.host)
-                }
-                fun(node)
-            } else {
-                nodes.push(top(node).host)
+            let fun = (node) => {
+                let nn = top(node)
+                nodes.push(nn.host ? nn.host : nn)
+                if (nn.host && all) fun(nn.host)
             }
+            fun(node)
         })
         this._refs(nodes)
         return this
