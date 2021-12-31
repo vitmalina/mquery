@@ -1,6 +1,6 @@
 # mQuery
 
-Modern Query (mQuery) is super, super tiny, modern, ES6 compatible library for DOM manipulation. Ever-green browsers only.
+Modern Query (mQuery) is super, super tiny, modern, ES modules compatible library for DOM manipulation. Ever-green browsers only.
 
 Download for [Production](https://raw.githubusercontent.com/vitmalina/mquery/main/dist/mquery.min.js) or
 [Development](https://raw.githubusercontent.com/vitmalina/mquery/main/dist/mquery.js)
@@ -8,11 +8,11 @@ Download for [Production](https://raw.githubusercontent.com/vitmalina/mquery/mai
 import $ from 'mquery.min.js'
 ```
 
-See more in [Documentation](#usage)
+See more in [Documentation](#documentation)
 
 ## Why bother?
 
-Because I am tired of typing `document.querySelectorAll`, `element.addEventListener`, loop through the nodes when I do not have to, have hard time removing `event handlers` and working with `data` attached to dom elements, etc.... and because people frown upon jQuery.
+Because I am tired of typing `document.querySelectorAll`, `element.addEventListener`, loop through the elements when I do not have to, have hard time removing `event handlers` and working with `data` attached to dom elements, etc.... and because people frown upon jQuery.
 
 Consider following samples:
 ```js
@@ -71,10 +71,10 @@ The goal of this project is to create tiny library that can replace jQuery in pr
 
 ## Alternatives
 
-- [Cash](https://github.com/fabiospampinato/cash) - 6 kb gzipped, clean syntax, more jQuery compatible
-- [Zepto](https://zeptojs.com/) - 9.8 kb gzipped, old API, no active suppport
-- [UmbrellaJS](https://umbrellajs.com/) - 2.5 kb gzipped, API not always to my liking
-- [mQuery](https://github.com/vitmalina/mquery) ~ 1.8 kb gzipped, minimalistic, easy to integrated into your library
+- [Cash](https://github.com/fabiospampinato/cash) - 6 kb gzipped, clean syntax, quite jQuery compatible
+- [Zepto](https://zeptojs.com/) - 9.8 kb gzipped, old API, seems a discontinued project
+- [UmbrellaJS](https://umbrellajs.com/) - 2.5 kb gzipped, API not to my liking
+- [mQuery](https://github.com/vitmalina/mquery) ~ 1.8 kb gzipped, minimalistic, easy to embed into your library
 
 I liked Cash, and if I need something closer to jQuery, I would probably use it.
 
@@ -128,16 +128,17 @@ $('.span').css('border', '1px solid red')
 
 ## Documentation
 
-MQuery uses DOM's `querySelctorAll` to build a set of nodes, after that you can add/remove nodes in the set or change nodes in the set
+MQuery uses DOM's `querySelctorAll` to build a set of elements, after that you can add/remove elements in the set or
+change elements properties and attributes.
 
 ### $()
 
-This is the main selector method and it returns a collection of nodes.
+This is the main selector method and it returns a collection of elements.
 
 ```js
 $(selector) // => collection
 $(collection) // => collection
-$(nodes) // => collection
+$(element) // => collection
 $(HTMLElement) // => collection
 ```
 
@@ -224,9 +225,9 @@ $(element).attr(object) // => collection
 
 #### removeAttr()
 
-Removes attribute from each nodes.
+Removes attribute from each elements.
 
-Accepts space-separated `attr` for removing multiple attributes.
+Accepts multiple `attr` for removing multiple attributes.
 
 ```js
 $(element).removeAttr(attr) // => collection
@@ -249,11 +250,56 @@ $(element).prop(object) // => collection
 
 #### removeProp()
 
-Removes property from each nodes.
+Removes property from each elements.
 
-Accepts space-separated `attr` for removing multiple attributes.
+Accepts multiple `attr` for removing multiple attributes.
 
 ```js
 $(element).removeProp(prop) // => collection
 $(element).removeProp(prop1, prop2, ...) // => collection
+```
+
+#### addClass()
+
+Adds the `className` class to each element in the collection.
+
+Accepts multiple `className` (space or comma separated).
+
+```js
+$(element).addClass(className) // => collection
+```
+
+#### removeClass()
+
+Removes `className` from all elements in the collection.
+
+Accepts multiple `className` (space or comma separated).
+
+Providing no arguments will remove all classes from all elements in the collection.
+
+```js
+$(element).removeClass() // => collection
+$(element).removeClass(className) // => collection
+```
+
+#### toggleClass()
+
+Adds or removes className from collection elements based on if the element already has the class.
+
+Accepts space-separated classNames for toggling multiple classes, and an optional `force` boolean to ensure classes are added (`true`) or removed (`false`).
+
+```js
+$(element).toggleClass(className) // => collection
+$(element).toggleClass(className, force) // => collection
+```
+
+#### hasClass()
+
+Returns true if all elements in the collection have all specieid classes.
+
+Providing no arguments will return an array of classes the first element has
+
+```js
+$(element).hasClass(className) // => boolean
+$(element).hasClass() // => [classes]
 ```

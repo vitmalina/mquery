@@ -48,7 +48,7 @@
     _insert(method, html) {
         let nodes = []
         if (typeof html == 'string') {
-            let doc = this.nodes[0].ownerDocument
+            let doc = this[0].ownerDocument
             let template = doc.createElement('template')
             this.each(node => {
                 template.innerHTML = html
@@ -68,14 +68,14 @@
     }
 
     eq(index) {
-        let nodes = [this.nodes[index]]
+        let nodes = [this[index]]
         if (nodes[0] == null) nodes = []
         this._refs(nodes)
         return this
     }
 
     get(index) {
-        let node = this.nodes[index]
+        let node = this[index]
         if (node) {
             return node
         }
@@ -197,13 +197,13 @@
         let css = key
         let len = arguments.length
         if (len === 0 || (len ===1 && typeof key == 'string')) {
-            if (this.nodes[0]) {
+            if (this[0]) {
                 // do not do computedStyleMap as it is not what on immediate element
                 if (typeof key == 'string') {
-                    return this.nodes[0].style[key]
+                    return this[0].style[key]
                 } else {
                     return Object.fromEntries(
-                        this.nodes[0].style.cssText
+                        this[0].style.cssText
                             .split(';')
                             .filter(a => !!a) // filter non-empty
                             .map(a => {
@@ -239,11 +239,13 @@
     }
 
     toggleClass(classes, force) {
-        if (typeof classes == 'string') {
-            classes = classes.split(' ')
-        }
+        // split by comma or space
+        if (typeof classes == 'string') classes = classes.split(/[ ,]+/)
         this.each(node => {
-            classes.forEach(className => {
+            let classes2 = classes
+            // if not defined, remove all classes
+            if (classes2 == null && force === false) classes2 = Array.from(node.classList)
+            classes2.forEach(className => {
                 if (className !== '') {
                     let act = 'toggle'
                     if (force != null) act = force ? 'add' : 'remove'
@@ -255,10 +257,12 @@
     }
 
     hasClass(classes) {
-        if (typeof classes == 'string') {
-            classes = classes.split(' ')
-        }
+        // split by comma or space
+        if (typeof classes == 'string') classes = classes.split(/[ ,]+/)
         let ret = true
+        if (classes == null && this.length > 0) {
+            return Array.from(this[0].classList)
+        }
         this.each(node => {
             let current = Array.from(node.classList)
             classes.forEach(className => {
@@ -320,7 +324,7 @@
 
     attr(name, value) {
         if (value === undefined && typeof name == 'string') {
-            return this.nodes[0] ? this.nodes[0].getAttribute(name) : undefined
+            return this[0] ? this[0].getAttribute(name) : undefined
         } else {
             let obj = {}
             if (typeof name == 'object') obj = name; else obj[name] = value
@@ -342,7 +346,7 @@
 
     prop(name, value) {
         if (value === undefined && typeof name == 'string') {
-            return this.nodes[0] ? this.nodes[0][name] : undefined
+            return this[0] ? this[0][name] : undefined
         } else {
             let obj = {}
             if (typeof name == 'object') obj = name; else obj[name] = value
@@ -362,10 +366,10 @@
 
     data(key, value) {
         if (arguments.length < 2) {
-            if (this.nodes[0]) {
-                let data = this.nodes[0]._mQuery?.data ?? {}
+            if (this[0]) {
+                let data = this[0]._mQuery?.data ?? {}
                 // also pick all atributes that start with data-*
-                Array.from(this.nodes[0].attributes).forEach(attr => {
+                Array.from(this[0].attributes).forEach(attr => {
                     if (attr.name.substr(0, 5) == 'data-') {
                         let val = attr.value
                         let nm  = attr.name.substr(5)
