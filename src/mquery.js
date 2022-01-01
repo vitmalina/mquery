@@ -333,7 +333,17 @@
     }
 
     trigger(name, options) {
-        // TODO: Implement
+        let event,
+            mevent = ['click', 'dblclick', 'mousedown', 'mouseup', 'mousemove'],
+            kevent = ['keydown', 'keyup', 'keypress']
+        if (mevent.includes(name)) {
+            event = new MouseEvent(name, options)
+        } else if (kevent.includes(name)) {
+            event = new KeyboardEvent(name, options)
+        } else {
+            event = new Event(name, options)
+        }
+        this.each(node => { node.dispatchEvent(event) })
         return this
     }
 

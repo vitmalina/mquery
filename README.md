@@ -465,6 +465,25 @@ $(element).off('.my-scope') // removes all events with custom scope => collectio
 $(element).off('.*') // removes all events => collection
 ```
 
+#### trigger()
+
+Triggers supplied event on each element in the collection. Data can be passed along as the second parameter.
+
+```js
+$(element).trigger(eventName) // => collection
+$(element).trigger(eventName, data) // => collection
+```
+
+To pass mouse coordinates do this
+```js
+$(element).treigger('click', { clientX: 10, clientY: 15 })
+```
+
+To pass keyboard key code
+```js
+$(element).treigger('keydown', { keyCode: 65 }) // don't expect that letter will appear, but event data will have right key code
+```
+
 #### val()
 ```js
 $(element).val(value)
