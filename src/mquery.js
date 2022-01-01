@@ -7,6 +7,10 @@
 
     constructor(selector) {
         this.version = 0.1
+        /**
+         * No need to implementd (selector, context) as it can be archived by
+         * $(context).find(selector)
+         */
         let nodes = []
         if (Array.isArray(selector)) {
             nodes  = selector
@@ -132,6 +136,8 @@
         return this
     }
 
+    // host()
+    // host(all)
     host(all) {
         let nodes = []
         // find shadow root or body
@@ -443,6 +449,14 @@
     toggle() {
         let dsp = this.css('display')
         return this.css('display', dsp == 'none' ? 'inherit' : 'none')
+    }
+
+    change() {
+        this.trigger('change')
+    }
+
+    click() {
+        this.trigger('click')
     }
 }
 // create a new object each time

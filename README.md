@@ -532,3 +532,17 @@ $(element).text()
 // same as
 $(element).prop('textContent', '')
 ```
+
+#### change()
+```js
+$(element).change()
+// same as
+$(element).trigger('change')
+```
+
+#### click()
+```js
+$(element).click()
+// same as
+$(element).trigger('click')
+```
