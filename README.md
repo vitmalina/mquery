@@ -1,18 +1,22 @@
 # mQuery
 
-Modern Query (mQuery) is super, super tiny, modern, ES modules compatible library for DOM manipulation. Ever-green browsers only.
+Modern Query (mQuery) is super, super tiny, modern, ES modules compatible library for DOM manipulation, and it is
+friendly for web-components too. Ever-green browsers only.
 
 Download for [Production](https://raw.githubusercontent.com/vitmalina/mquery/main/dist/mquery.min.js) or
 [Development](https://raw.githubusercontent.com/vitmalina/mquery/main/dist/mquery.js)
+
 ```js
 import $ from 'mquery.min.js'
 ```
 
-See more in [Documentation](#documentation)
+See [Documentation](#documentation)
 
 ## Why bother?
 
-Because I am tired of typing `document.querySelectorAll`, `element.addEventListener`, loop through the elements when I do not have to, have hard time removing `event handlers` and working with `data` attached to dom elements, etc.... and because people frown upon jQuery.
+Because I am tired of typing `document.querySelectorAll`, `element.addEventListener`, loop through the elements when I
+do not have to, have hard time removing `event handlers` and working with `data` attached to dom elements, etc.... and
+because people frown upon jQuery.
 
 Consider following samples:
 ```js
@@ -61,6 +65,21 @@ $('#id').on('click.custom', { preview: true }, (event) => {
 })
 // ...
 $('#id').off('.custom')
+```
+
+Shadow DOM
+```js
+// vanilla JS
+document.querySelector('web-component').shadowRoot.querySelectorAll('span').forEach(node => {
+    node.style.color = 'red'
+})
+this.shadowRoot.querySelectorAll('span').host.style.color = '1px solid green'
+
+// ----------------
+
+// mQuery
+$('web-component').shadow('<span>').css('color', 'red')
+$('span').host().css('border', '1px solid green')
 ```
 
 ## The story
@@ -147,14 +166,15 @@ $(HTMLElement) // => collection
 | Collection | Attribute/Property | Change DOM | Events | Short-hand |
 | ---------- | ------------------ | ---------- | ------ | --------- |
 | [find()](#find)       | [attr()](#attr)               | [after()](#after)     | [on()](#on)           | [val()](#val)       |
-| [shadow()](#shadow)   | [removeAttr()](#removeattr)   | [before()](#before)   | [off()](#off)         | [data()](#data)     |
-| [closest()](#closest) | [prop()](#prop)               | [append()](#append)   | [trigger()](#trigger) | [show()](#show)     |
-| [host()](#host)       | [removeProp()](#removeprop)   | [prepend()](#prepend) |                       | [hide()](#hide)     |
-| [get()](#get)         | [css()](#css)                 | [replace()](#replace) |                       | [toggle()](#toggle) |
-| [eq()](#eq)           | [addClass()](#addclass)       | [remove()](#remove)   |
-| [each()](#each)       | [removeClass()](#removeclass) | [empty()](#empty)     |
-|                       | [hasClass()](#hasclass)       | [html()](#html)       |
-|                       | [toggleClass()](#toggleclass) | [text()](#text)       |
+| [shadow()](#shadow)   | [removeAttr()](#removeattr)   | [before()](#before)   | [off()](#off)         | [show()](#show)     |
+| [closest()](#closest) | [prop()](#prop)               | [append()](#append)   | [trigger()](#trigger) | [hide()](#hide)     |
+| [host()](#host)       | [removeProp()](#removeprop)   | [prepend()](#prepend) |                       | [toggle()](#toggle) |
+| [get()](#get)         | [addClass()](#addclass)       | [replace()](#replace) |                       | [empty()](#empty)   |
+| [eq()](#eq)           | [removeClass()](#removeclass) | [remove()](#remove)   |                       | [html()](#html)     |
+| [each()](#each)       | [hasClass()](#hasclass)       |                       |                       | [text()](#text)     |
+|                       | [toggleClass()](#toggleclass) |
+|                       | [css()](#css)                 |
+|                       | [data()](#data)               |
 
 ### Collection
 
@@ -313,4 +333,183 @@ Providing no arguments will return an array of classes the first element has
 ```js
 $(element).hasClass(className) // => boolean
 $(element).hasClass() // => [classes]
+```
+
+#### css()
+
+Returns all CSS property values of the first element (not inherited ones) when no arguments are supplied.
+
+Returns a CSS property value of the first element (not inherited ones) when just property is supplied.
+
+Sets a CSS property when the property and the value are supplied.
+
+Sets multiple properties when an object is supplied.
+
+```js
+$(element).css() // => object
+$(element).css(property) // => value
+$(element).css(property, value) // => collection
+$(element).css(object) // => collection
+```
+
+#### data()
+
+Without arguments, returns an object with user data and also maps all the `data-*` attributes.
+
+With a `key`, return the value of the user data or a corresponding `data-*` attribute.
+
+With both a `key` and `value`, sets the value of the user data.
+
+The `value` can be an object. And if <... data-...="{obj}"> is a valid JSON, it will be parsed as JSON
+
+```js
+$(element).data() // => object
+$(element).data(key) // => value
+$(element).data(key, value) // => collection
+$(element).data(object) // => collection
+```
+
+#### after()
+
+Inserts content or element after each element in the collection.
+
+If existing element is provided and
+- if current collection has only one element, the inserting element will be moved to the right place in the DOM.
+- if current collection has more then one element, the inserting element will be cloned and moved to the right place in DOM.
+
+```js
+$(element).after(html) // => collection
+$(element).after(element) // => collection
+```
+
+#### before()
+
+Inserts content or element before each element in the collection.
+
+If existing element is provided and
+- if current collection has only one element, the inserting element will be moved to the right place in the DOM.
+- if current collection has more then one element, the inserting element will be cloned and moved to the right place in DOM.
+
+```js
+$(element).before(html) // => collection
+$(element).before(element) // => collection
+```
+
+#### append()
+
+Appens content or element inside each element in the collection.
+
+If existing element is provided and
+- if current collection has only one element, the inserting element will be moved to the right place in the DOM.
+- if current collection has more then one element, the inserting element will be cloned and moved to the right place in DOM.
+
+```js
+$(element).append(html) // => collection
+$(element).append(element) // => collection
+```
+
+#### prepend()
+
+Prepends content or element inside each element in the collection.
+
+If existing element is provided and
+- if current collection has only one element, the inserting element will be moved to the right place in the DOM.
+- if current collection has more then one element, the inserting element will be cloned and moved to the right place in DOM.
+
+```js
+$(element).prepend(html) // => collection
+$(element).prepend(element) // => collection
+```
+
+#### replace()
+
+Replaces each element of the collection with provided content or element and returns the new collection.
+
+If existing element is provided and
+- if current collection has only one element, the inserting element will be moved to the right place in the DOM.
+- if current collection has more then one element, the inserting element will be cloned and moved to the right place in DOM.
+
+```js
+$(element).replace(html) // => collection
+$(element).replace(element) // => collection
+```
+
+#### on()
+
+Adds event listener to each element in the collection.
+
+Allows to add custom scoping for the event so multiple can be easily removed. If event name has a dot (for example `event.scope`),
+anythign after the dot is considered a scope.
+
+You can optionally pass options that include { caption: t/f, once: t/f, passive: t/f, signal },
+[MDN Documentation](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener)
+
+```js
+$(element).on(event) // => collection
+$(element).on(event, handler) // => collection
+$(element).on(event, options, handler) // => collection
+```
+
+#### off()
+
+Removes event listener from each element in the collection.
+
+Allows to remove events with custom scoping . If event name has a dot (for example `event.scope`),
+anythign after the dot is considered a scope.
+
+Removes all event listeners if called without arguments.
+
+```js
+$(element).off(event, handler) // => collection
+$(element).off('.my-scope') // removes all events with custom scope => collection
+$(element).off('.*') // removes all events => collection
+```
+
+#### val()
+```js
+$(element).val(value)
+// same as
+$(element).attr('value', value)
+```
+
+#### show()
+```js
+$(element).show()
+// same as
+$(element).css('display', '')
+```
+
+#### hide()
+```js
+$(element).hide()
+// same as
+$(element).css('display', 'none')
+```
+
+#### toggle()
+```js
+$(element).toggle()
+// same as
+$(element).css('display', isVisible ? 'none' : '')
+```
+
+#### empty()
+```js
+$(element).empty()
+// same as
+$(element).prop('innerHTML', '')
+```
+
+#### html()
+```js
+$(element).html()
+// same as
+$(element).prop('innerHTML', '')
+```
+
+#### text()
+```js
+$(element).text()
+// same as
+$(element).prop('textContent', '')
 ```
