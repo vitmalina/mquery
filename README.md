@@ -504,7 +504,7 @@ $(element).attr('value', value)
 ```js
 $(element).show()
 // same as
-$(element).css('display', '')
+$(element).css('display', 'inherit')
 ```
 
 #### hide()
@@ -518,7 +518,7 @@ $(element).css('display', 'none')
 ```js
 $(element).toggle()
 // same as
-$(element).css('display', isVisible ? 'none' : '')
+$(element).css('display', isVisible ? 'none' : 'inherit')
 ```
 
 #### empty()

@@ -452,11 +452,11 @@
     }
 
     change() {
-        this.trigger('change')
+        return this.trigger('change')
     }
 
     click() {
-        this.trigger('click')
+        return this.trigger('click')
     }
 }
 // create a new object each time
