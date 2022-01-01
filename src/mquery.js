@@ -7,10 +7,6 @@
 
     constructor(selector) {
         this.version = 0.1
-        /**
-         * No need to implementd (selector, context) as it can be archived by
-         * $(context).find(selector)
-         */
         let nodes = []
         if (Array.isArray(selector)) {
             nodes  = selector
@@ -136,8 +132,6 @@
         return this
     }
 
-    // host()
-    // host(all)
     host(all) {
         let nodes = []
         // find shadow root or body

@@ -188,7 +188,7 @@ $(element).find(selector) // => collection
 
 #### shadow()
 
-Returns selector matched discendents piersing shadowRoot of each node.
+Returns selector matched discendents piersing shadowRoot of each node. Similar to find, but in shadowRoot.
 
 ```js
 $(element).shadow(selector) // => collection
@@ -206,7 +206,7 @@ $(element).closest(selector) // => collection
 
 Returns host element for each element. Host element is a custom web component or a document.
 
-If `true` is provided, it returns a collection of all hosts up to the document.
+If `true` is provided, it returns a collection of all hosts up to the document top.
 
 ```js
 $(element).host() // => collection
