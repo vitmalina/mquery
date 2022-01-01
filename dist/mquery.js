@@ -1,11 +1,11 @@
-/* mQuery 1.0.x (nightly) (12/29/2021, 9:11:08 PM), vitmalina@gmail.com */
+/* mQuery 0.2 (nightly) (1/1/2022, 10:24:15 AM), vitmalina@gmail.com */
 /**
  * Small library to replace basic functionality of jQuery
  * methods that start with "_" are internal
  */
  class Query {
     constructor(selector) {
-        this.version = 0.1
+        this.version = 0.2
         /**
          * No need to implementd (selector, context) as it can be archived by
          * $(context).find(selector)
@@ -13,7 +13,7 @@
         let nodes = []
         if (Array.isArray(selector)) {
             nodes  = selector
-        } else if (selector instanceof DocumentFragment || selector instanceof HTMLElement || selector instanceof Text) {
+        } else if (this._isEl(selector)) {
             if (selector.isConnected) {
                 nodes = [selector]
             } else {
@@ -27,6 +27,9 @@
             throw new Error('Unknown selector')
         }
         this._refs(nodes)
+    }
+    _isEl(node) {
+        return (node instanceof DocumentFragment || node instanceof HTMLElement || node instanceof Text)
     }
     _refs(nodes) {
         this.nodes = nodes
@@ -44,33 +47,46 @@
     }
     _insert(method, html) {
         let nodes = []
+        let len  = this.length
+        if (len < 1) return
+        let isEl = this._isEl(html)
+        let clone = (html) => {
+            let tmpl = this[0].ownerDocument.createElement('template')
+            tmpl.innerHTML = html
+            return tmpl.content
+        }
         if (typeof html == 'string') {
-            let doc = this.nodes[0].ownerDocument
-            let template = doc.createElement('template')
             this.each(node => {
-                template.innerHTML = html
+                let cln = clone(html)
                 if (method == 'replaceWith') {
                     // replace nodes, but keep reference to them
-                    nodes.push(...template.content.childNodes)
+                    nodes.push(...cln.childNodes)
                 }
-                node[method](template.content) // inserts nodes or text
+                node[method](cln) // inserts nodes or text
             })
             if (method == 'replaceWith') {
                 this._refs(nodes)
             }
+        } else if (isEl) {
+            this.each(node => {
+                let cln = clone(html.outerHTML)
+                node[method](len === 1 ? html : cln)
+                if (len > 1 && isEl) nodes.push(...cln.childNodes)
+            })
+            if (len > 1 && isEl) html.remove()
         } else {
             throw new Error(`Incorrect argument for "${method}(html)". It expects one string argument.`)
         }
         return this
     }
     eq(index) {
-        let nodes = [this.nodes[index]]
+        let nodes = [this[index]]
         if (nodes[0] == null) nodes = []
         this._refs(nodes)
         return this
     }
     get(index) {
-        let node = this.nodes[index]
+        let node = this[index]
         if (node) {
             return node
         }
@@ -101,36 +117,34 @@
     }
     closest(selector) {
         let nodes = []
-        if (selector == ':host') {
-            // find shadow root or body
-            let top = (node) => {
-                if (node.parentNode) {
-                    return top(node.parentNode)
-                } else {
-                    return node
-                }
+        this.each(node => {
+            let nn = node.closest(selector)
+            if (nn) {
+                nodes.push(nn)
             }
-            this.each(node => {
-                nodes.push(top(node))
-            })
-        } else {
-            this.each(node => {
-                let nn = node.closest(selector)
-                if (nn) {
-                    nodes.push(nn)
-                }
-            })
-        }
+        })
         this._refs(nodes)
         return this
     }
-    parent() {
+    // host()
+    // host(all)
+    host(all) {
         let nodes = []
-        this.each(node => {
-            let nodes = node.parentNode
-            if (node) {
-                nodes.push(node)
+        // find shadow root or body
+        let top = (node) => {
+            if (node.parentNode) {
+                return top(node.parentNode)
+            } else {
+                return node
             }
+        }
+        this.each(node => {
+            let fun = (node) => {
+                let nn = top(node)
+                nodes.push(nn.host ? nn.host : nn)
+                if (nn.host && all) fun(nn.host)
+            }
+            fun(node)
         })
         this._refs(nodes)
         return this
@@ -176,13 +190,13 @@
         let css = key
         let len = arguments.length
         if (len === 0 || (len ===1 && typeof key == 'string')) {
-            if (this.nodes[0]) {
+            if (this[0]) {
                 // do not do computedStyleMap as it is not what on immediate element
                 if (typeof key == 'string') {
-                    return this.nodes[0].style[key]
+                    return this[0].style[key]
                 } else {
                     return Object.fromEntries(
-                        this.nodes[0].style.cssText
+                        this[0].style.cssText
                             .split(';')
                             .filter(a => !!a) // filter non-empty
                             .map(a => {
@@ -215,11 +229,13 @@
         return this
     }
     toggleClass(classes, force) {
-        if (typeof classes == 'string') {
-            classes = classes.split(' ')
-        }
+        // split by comma or space
+        if (typeof classes == 'string') classes = classes.split(/[ ,]+/)
         this.each(node => {
-            classes.forEach(className => {
+            let classes2 = classes
+            // if not defined, remove all classes
+            if (classes2 == null && force === false) classes2 = Array.from(node.classList)
+            classes2.forEach(className => {
                 if (className !== '') {
                     let act = 'toggle'
                     if (force != null) act = force ? 'add' : 'remove'
@@ -230,10 +246,12 @@
         return this
     }
     hasClass(classes) {
-        if (typeof classes == 'string') {
-            classes = classes.split(' ')
-        }
+        // split by comma or space
+        if (typeof classes == 'string') classes = classes.split(/[ ,]+/)
         let ret = true
+        if (classes == null && this.length > 0) {
+            return Array.from(this[0].classList)
+        }
         this.each(node => {
             let current = Array.from(node.classList)
             classes.forEach(className => {
@@ -286,12 +304,22 @@
         return this
     }
     trigger(name, options) {
-        // TODO: Implement
+        let event,
+            mevent = ['click', 'dblclick', 'mousedown', 'mouseup', 'mousemove'],
+            kevent = ['keydown', 'keyup', 'keypress']
+        if (mevent.includes(name)) {
+            event = new MouseEvent(name, options)
+        } else if (kevent.includes(name)) {
+            event = new KeyboardEvent(name, options)
+        } else {
+            event = new Event(name, options)
+        }
+        this.each(node => { node.dispatchEvent(event) })
         return this
     }
     attr(name, value) {
         if (value === undefined && typeof name == 'string') {
-            return this.nodes[0] ? this.nodes[0].getAttribute(name) : undefined
+            return this[0] ? this[0].getAttribute(name) : undefined
         } else {
             let obj = {}
             if (typeof name == 'object') obj = name; else obj[name] = value
@@ -311,7 +339,7 @@
     }
     prop(name, value) {
         if (value === undefined && typeof name == 'string') {
-            return this.nodes[0] ? this.nodes[0][name] : undefined
+            return this[0] ? this[0][name] : undefined
         } else {
             let obj = {}
             if (typeof name == 'object') obj = name; else obj[name] = value
@@ -329,10 +357,10 @@
     }
     data(key, value) {
         if (arguments.length < 2) {
-            if (this.nodes[0]) {
-                let data = this.nodes[0]._mQuery?.data ?? {}
+            if (this[0]) {
+                let data = this[0]._mQuery?.data ?? {}
                 // also pick all atributes that start with data-*
-                Array.from(this.nodes[0].attributes).forEach(attr => {
+                Array.from(this[0].attributes).forEach(attr => {
                     if (attr.name.substr(0, 5) == 'data-') {
                         let val = attr.value
                         let nm  = attr.name.substr(5)
@@ -375,14 +403,20 @@
         return this
     }
     show() {
-        return this.css('display', '')
+        return this.css('display', 'inherit')
     }
     hide() {
         return this.css('display', 'none')
     }
     toggle() {
         let dsp = this.css('display')
-        return this.css('display', dsp == 'none' ? '' : 'none')
+        return this.css('display', dsp == 'none' ? 'inherit' : 'none')
+    }
+    change() {
+        return this.trigger('change')
+    }
+    click() {
+        return this.trigger('click')
     }
 }
 // create a new object each time

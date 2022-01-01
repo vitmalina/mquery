@@ -6,7 +6,7 @@
  class Query {
 
     constructor(selector) {
-        this.version = 0.1
+        this.version = 0.2
         /**
          * No need to implementd (selector, context) as it can be archived by
          * $(context).find(selector)
