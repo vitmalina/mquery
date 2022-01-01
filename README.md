@@ -78,7 +78,7 @@ this.shadowRoot.querySelectorAll('span').host.style.color = '1px solid green'
 // ----------------
 
 // mQuery
-$('web-component').shadow('<span>').css('color', 'red')
+$('web-component').shadow('span').css('color', 'red')
 $('span').host().css('border', '1px solid green')
 ```
 
@@ -133,6 +133,10 @@ Build process only uglifies JS and puts it into `/dist` folder. To run it do
 npm i
 gulp build
 ```
+
+I build after change, see for [Production](https://raw.githubusercontent.com/vitmalina/mquery/main/dist/mquery.min.js) or
+[Development](https://raw.githubusercontent.com/vitmalina/mquery/main/dist/mquery.js)
+
 
 ## Usage
 
