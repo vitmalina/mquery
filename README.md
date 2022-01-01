@@ -172,11 +172,11 @@ $(HTMLElement) // => collection
 | [get()](#get)         | [addClass()](#addclass)       | [replace()](#replace) |                       | [empty()](#empty)   |
 | [eq()](#eq)           | [removeClass()](#removeclass) | [remove()](#remove)   |                       | [html()](#html)     |
 | [each()](#each)       | [hasClass()](#hasclass)       |                       |                       | [text()](#text)     |
-|                       | [toggleClass()](#toggleclass) |
-|                       | [css()](#css)                 |
+|                       | [toggleClass()](#toggleclass) |                       |                       | [click()](#click)   |
+|                       | [css()](#css)                 |                       |                       | [change()](#change) |
 |                       | [data()](#data)               |
 
-### Collection
+## Collection
 
 #### find()
 
@@ -238,7 +238,7 @@ Iterates over a collection with `callback(element, index, mQuery)`.
 $(element).each(callback) // => collection
 ```
 
-### Attribute/Property
+## Attribute/Property
 
 #### attr()
 
@@ -369,6 +369,8 @@ $(element).data(key, value) // => collection
 $(element).data(object) // => collection
 ```
 
+## Change DOM
+
 #### after()
 
 Inserts content or element after each element in the collection.
@@ -434,6 +436,8 @@ $(element).replace(html) // => collection
 $(element).replace(element) // => collection
 ```
 
+## Events
+
 #### on()
 
 Adds event listener to each element in the collection.
@@ -481,8 +485,13 @@ $(element).treigger('click', { clientX: 10, clientY: 15 })
 
 To pass keyboard key code
 ```js
-$(element).treigger('keydown', { keyCode: 65 }) // don't expect that letter will appear, but event data will have right key code
+$(element).treigger('keydown', { keyCode: 65 })
+// don't expect that letter will appear, but event data will have right key code
 ```
+
+## Short-hand
+
+All these methods are short hand for some other call.
 
 #### val()
 ```js
