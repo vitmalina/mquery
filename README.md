@@ -59,7 +59,7 @@ document.querySelector('#id')
 
 // ----------------
 
-// jQuery / mQuery
+// mQuery
 $('#id').on('click.custom', { preview: true }, (event) => {
     // do something
 })
