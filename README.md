@@ -198,39 +198,12 @@ Returns selector matched descendants of each node.
 $(element).find(selector) // => collection
 ```
 
-#### shadow()
-
-Returns selector matched discendents piersing shadowRoot of each node. Similar to find, but in shadowRoot.
-
-```js
-$(element).shadow(selector) // => collection
-```
-
 #### closest()
 
 Returns the selector matched parent up the DOM tree.
 
 ```js
 $(element).closest(selector) // => collection
-```
-
-#### host()
-
-Returns host element for each element. Host element is a custom web component or a document.
-
-If `true` is provided, it returns a collection of all hosts up to the document top.
-
-```js
-$(element).host() // => collection
-$(element).host(true) // => collection
-```
-
-#### eq()
-
-Returns a collection with the element at the index.
-
-```js
-$(element).eq(index) // => collection
 ```
 
 #### get()
@@ -242,12 +215,39 @@ $(element).get(index) // => HTMLElement
 $(element).get() // => array of HTMLElements
 ```
 
+#### eq()
+
+Returns a collection with the element at the index.
+
+```js
+$(element).eq(index) // => collection
+```
+
 #### each()
 
 Iterates over a collection with `callback(element, index, mQuery)`.
 
 ```js
 $(element).each(callback) // => collection
+```
+
+#### shadow()
+
+Returns selector matched discendents piersing shadowRoot of each node. Similar to find, but in shadowRoot.
+
+```js
+$(element).shadow(selector) // => collection
+```
+
+#### host()
+
+Returns host element for each element. Host element is a custom web component or a document.
+
+If `true` is provided, it returns a collection of all hosts up to the document top.
+
+```js
+$(element).host() // => collection
+$(element).host(true) // => collection
 ```
 
 ## Attribute/Property
