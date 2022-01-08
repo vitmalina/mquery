@@ -52,15 +52,15 @@ let handler = (event) => {
     // do something
 }
 document.querySelector('#id')
-    .addEventListener('click', handler, { preview: true })
+    .addEventListener('click', handler, { once: true })
 // ...
 document.querySelector('#id')
-    .removeEventListener('click', handler, { preview: true })
+    .removeEventListener('click', handler, { once: true })
 
 // ----------------
 
 // mQuery
-$('#id').on('click.custom', { preview: true }, (event) => {
+$('#id').on('click.custom', { once: true }, (event) => {
     // do something
 })
 // ...
