@@ -70,9 +70,10 @@ $('#id').off('.custom')
 Shadow DOM
 ```js
 // vanilla JS
-document.querySelector('web-component').shadowRoot.querySelectorAll('span').forEach(node => {
-    node.style.color = 'red'
-})
+document.querySelector('web-component')
+    .shadowRoot.querySelectorAll('span').forEach(node => {
+        node.style.color = 'red'
+    })
 this.shadowRoot.querySelectorAll('span').host.style.color = '1px solid green'
 
 // ----------------
