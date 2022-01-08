@@ -448,6 +448,14 @@ $(element).replace(html) // => collection
 $(element).replace(element) // => collection
 ```
 
+#### remove()
+
+Removes each element of the collection from the DOM. Elements are not removed from the colleciton and can be acted uppon.
+
+```js
+$(element).remove() // => collection
+```
+
 ## Events
 
 #### on()
