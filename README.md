@@ -553,16 +553,16 @@ $(element).prop('innerHTML', '')
 
 #### html()
 ```js
-$(element).html()
+$(element).html(str)
 // same as
-$(element).prop('innerHTML', '')
+$(element).prop('innerHTML', str)
 ```
 
 #### text()
 ```js
-$(element).text()
+$(element).text(str)
 // same as
-$(element).prop('textContent', '')
+$(element).prop('textContent', str)
 ```
 
 #### change()
