@@ -160,9 +160,16 @@ This is the main selector method and it returns a collection of elements.
 
 ```js
 $(selector) // => collection
-$(collection) // => collection
-$(element) // => collection
+$(selector, context) // => collection
+$(mQuery) // => collection
 $(HTMLElement) // => collection
+$([HTMLELements]) // => collection
+```
+
+You can also generate document fragment based on some html and then append it in dom.
+```js
+let frag = $.html('<span>A span</span> and <span> some other span </span>')
+$('body').append(frag)
 ```
 
 ### Methods
@@ -498,7 +505,7 @@ $(element).trigger('keydown', { keyCode: 65 })
 // don't expect that letter will appear, but event data will have right key code
 ```
 
-Send entire event object
+Send an event object
 ```js
 $(element).trigger(new CustomEvent('MyEvent'))
 // don't expect that letter will appear, but event data will have right key code
