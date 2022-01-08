@@ -178,12 +178,12 @@ $('body').append(frag)
 | Collection | Attribute/Property | Change DOM | Events | Short-hand |
 | ---------- | ------------------ | ---------- | ------ | --------- |
 | [find()](#find)       | [attr()](#attr)               | [after()](#after)     | [on()](#on)           | [val()](#val)       |
-| [shadow()](#shadow)   | [removeAttr()](#removeattr)   | [before()](#before)   | [off()](#off)         | [show()](#show)     |
-| [closest()](#closest) | [prop()](#prop)               | [append()](#append)   | [trigger()](#trigger) | [hide()](#hide)     |
-| [host()](#host)       | [removeProp()](#removeprop)   | [prepend()](#prepend) |                       | [toggle()](#toggle) |
-| [get()](#get)         | [addClass()](#addclass)       | [replace()](#replace) |                       | [empty()](#empty)   |
-| [eq()](#eq)           | [removeClass()](#removeclass) | [remove()](#remove)   |                       | [html()](#html)     |
-| [each()](#each)       | [hasClass()](#hasclass)       |                       |                       | [text()](#text)     |
+| [closest()](#closest) | [removeAttr()](#removeattr)   | [before()](#before)   | [off()](#off)         | [show()](#show)     |
+| [get()](#get)         | [prop()](#prop)               | [append()](#append)   | [trigger()](#trigger) | [hide()](#hide)     |
+| [eq()](#eq)           | [removeProp()](#removeprop)   | [prepend()](#prepend) |                       | [toggle()](#toggle) |
+| [each()](#each)       | [addClass()](#addclass)       | [replace()](#replace) |                       | [empty()](#empty)   |
+| [shadow()](#shadow)   | [removeClass()](#removeclass) | [remove()](#remove)   |                       | [html()](#html)     |
+| [host()](#host)       | [hasClass()](#hasclass)       |                       |                       | [text()](#text)     |
 |                       | [toggleClass()](#toggleclass) |                       |                       | [click()](#click)   |
 |                       | [css()](#css)                 |                       |                       | [change()](#change) |
 |                       | [data()](#data)               |
