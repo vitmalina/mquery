@@ -336,7 +336,10 @@
         let event,
             mevent = ['click', 'dblclick', 'mousedown', 'mouseup', 'mousemove'],
             kevent = ['keydown', 'keyup', 'keypress']
-        if (mevent.includes(name)) {
+        if (name instanceof Event || name instanceof CustomEvent) {
+            // MouseEvent and KeyboardEvent are instances of Event, no need to explicitly add
+            event = name
+        } else if (mevent.includes(name)) {
             event = new MouseEvent(name, options)
         } else if (kevent.includes(name)) {
             event = new KeyboardEvent(name, options)

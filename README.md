@@ -475,21 +475,32 @@ $(element).off('.*') // removes all events => collection
 
 #### trigger()
 
-Triggers supplied event on each element in the collection. Data can be passed along as the second parameter.
+Triggers supplied event on each element in the collection. Options can be passed along as the second parameter, which
+will be used to create an event. This way you can send `clientX` and `clientY` or `keyCode` for example
+
+You can trigger events by a name, for example `click`, `mousedown` or you can create an event with `new Event(...)` or
+`new CustomEvent(...)` and trigger it on all elements of the collection.
 
 ```js
+$(element).trigger(event) // => collection
 $(element).trigger(eventName) // => collection
-$(element).trigger(eventName, data) // => collection
+$(element).trigger(eventName, options) // => collection
 ```
 
 To pass mouse coordinates do this
 ```js
-$(element).treigger('click', { clientX: 10, clientY: 15 })
+$(element).trigger('click', { clientX: 10, clientY: 15 })
 ```
 
 To pass keyboard key code
 ```js
-$(element).treigger('keydown', { keyCode: 65 })
+$(element).trigger('keydown', { keyCode: 65 })
+// don't expect that letter will appear, but event data will have right key code
+```
+
+Send entire event object
+```js
+$(element).trigger(new CustomEvent('MyEvent'))
 // don't expect that letter will appear, but event data will have right key code
 ```
 
