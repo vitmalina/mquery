@@ -3,7 +3,7 @@
  * methods that start with "_" are internal
  */
 
- class Query {
+class Query {
 
     constructor(selector, context) {
         this.version = 0.3
@@ -151,12 +151,12 @@
                 return node
             }
         }
+        let fun = (node) => {
+            let nn = top(node)
+            nodes.push(nn.host ? nn.host : nn)
+            if (nn.host && all) fun(nn.host)
+        }
         this.each(node => {
-            let fun = (node) => {
-                let nn = top(node)
-                nodes.push(nn.host ? nn.host : nn)
-                if (nn.host && all) fun(nn.host)
-            }
             fun(node)
         })
         this._refs(nodes)
@@ -277,16 +277,13 @@
     hasClass(classes) {
         // split by comma or space
         if (typeof classes == 'string') classes = classes.split(/[ ,]+/)
-        let ret = true
         if (classes == null && this.length > 0) {
             return Array.from(this[0].classList)
         }
+        let ret = false
         this.each(node => {
-            let current = Array.from(node.classList)
-            classes.forEach(className => {
-                if (!current.includes(className) && ret === true) {
-                    ret = false
-                }
+            ret = ret || classes.every(className => {
+                return Array.from(node.classList).includes(className)
             })
         })
         return ret
@@ -433,7 +430,7 @@
     removeData(key) {
         this.each(node => {
             node._mQuery = node._mQuery ?? {}
-            if (arguments.lenth == 0) {
+            if (arguments.length == 0) {
                 node._mQuery.data = {}
             } else if (key != null && node._mQuery.data) {
                 delete node._mQuery.data[key]
