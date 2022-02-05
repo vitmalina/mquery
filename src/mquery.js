@@ -4,15 +4,9 @@
  *
  * TODO:
  *  - .data(name, 1) => el.dataset.name
- *
- * CHANGES:
- * - get(-1), eq(-1) - return last
- * - find, etc, returns new collection
- * - filter
  */
 
  class Query {
-
     constructor(selector, context, previous) {
         this.version = 0.4
         this.context = context ?? document
