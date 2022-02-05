@@ -184,7 +184,7 @@ $('body').append(frag)
 | [each()](#each)       | [addClass()](#addclass)       | [replace()](#replace) |                       | [empty()](#empty)   |
 | [shadow()](#shadow)   | [removeClass()](#removeclass) | [remove()](#remove)   |                       | [html()](#html)     |
 | [host()](#host)       | [hasClass()](#hasclass)       |                       |                       | [text()](#text)     |
-|                       | [toggleClass()](#toggleclass) |                       |                       | [click()](#click)   |
+| [filter()](#filter)   | [toggleClass()](#toggleclass) |                       |                       | [click()](#click)   |
 |                       | [css()](#css)                 |                       |                       | [change()](#change) |
 |                       | [data()](#data)               |
 
@@ -192,7 +192,7 @@ $('body').append(frag)
 
 #### find()
 
-Returns selector matched descendants of each node.
+Returns selector matched descendants of each node. Returns a new collection.
 
 ```js
 $(element).find(selector) // => collection
@@ -200,7 +200,7 @@ $(element).find(selector) // => collection
 
 #### closest()
 
-Returns the selector matched parent up the DOM tree.
+Returns the selector matched parent up the DOM tree. Returns a new collection.
 
 ```js
 $(element).closest(selector) // => collection
@@ -212,15 +212,17 @@ Returns the element at the index, or returns all elements.
 
 ```js
 $(element).get(index) // => HTMLElement
+$(element).get(-1) // => HTMLElement (last element)
 $(element).get() // => array of HTMLElements
 ```
 
 #### eq()
 
-Returns a collection with the element at the index.
+Returns a collection with the element at the index. Returns a new collection.
 
 ```js
 $(element).eq(index) // => collection
+$(element).eq(-1) // => collection (last element)
 ```
 
 #### each()
@@ -233,7 +235,7 @@ $(element).each(callback) // => collection
 
 #### shadow()
 
-Returns selector matched discendents piersing shadowRoot of each node. Similar to find, but in shadowRoot.
+Returns selector matched discendents piersing shadowRoot of each node. Similar to find, but in shadowRoot. Returns a new collection.
 
 ```js
 $(element).shadow(selector) // => collection
@@ -241,13 +243,23 @@ $(element).shadow(selector) // => collection
 
 #### host()
 
-Returns host element for each element. Host element is a custom web component or a document.
+Returns host element for each element. Host element is a custom web component or a document. Returns a new collection.
 
 If `true` is provided, it returns a collection of all hosts up to the document top.
 
 ```js
 $(element).host() // => collection
-$(element).host(true) // => collection
+$(element).host(true) // => collection (all hosts)
+```
+
+#### filter()
+
+Returns collection filtered by a selector, an element or a function. Returns a new collection.
+
+```js
+$(element).filter(selector) // => collection
+$(element).filter(element) // => collection
+$(element).filter(func) // => collection
 ```
 
 ## Attribute/Property
