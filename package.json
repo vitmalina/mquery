@@ -1,6 +1,6 @@
 {
   "name": "mQUery",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "title": "Modern Query (mQuery)",
   "description": "Modern Query (mQuery) is a small, modern, ES6 modules compatible library for DOM manipulation. It will only work with ever-green browsers.",
   "license": "MIT",

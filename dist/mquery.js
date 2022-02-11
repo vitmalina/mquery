@@ -1,4 +1,4 @@
-/* mQuery 0.3 (nightly) (2/11/2022, 8:47:48 AM), vitmalina@gmail.com */
+/* mQuery 0.4 (nightly) (2/11/2022, 8:49:30 AM), vitmalina@gmail.com */
 /**
  * Small library to replace basic functionality of jQuery
  * methods that start with "_" are internal
