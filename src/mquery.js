@@ -1,9 +1,6 @@
 /**
  * Small library to replace basic functionality of jQuery
  * methods that start with "_" are internal
- *
- * TODO:
- *  - .data(name, 1) => el.dataset.name
  */
 
  class Query {
@@ -398,18 +395,10 @@
     data(key, value) {
         if (arguments.length < 2) {
             if (this[0]) {
-                let data = this[0]._mQuery?.data ?? {}
-                // also pick all atributes that start with data-*
-                Array.from(this[0].attributes).forEach(attr => {
-                    if (attr.name.substr(0, 5) == 'data-') {
-                        let val = attr.value
-                        let nm  = attr.name.substr(5)
-                        // if it is JSON - parse it
-                        if (['[', '{'].includes(String(val).substr(0, 1))) {
-                            try { val = JSON.parse(val) } catch(e) { val = attr.value }
-                        }
-                        // attributes have lower priority than set with data()
-                        if (data[nm] === undefined) data[nm] = val
+                let data = Object.assign({}, this[0].dataset)
+                Object.keys(data).forEach(key => {
+                    if (data[key].startsWith('[') || data[key].startsWith('{')) {
+                        try { data[key] = JSON.parse(data[key]) } catch(e) {}
                     }
                 })
                 return key ? data[key] : data
@@ -418,12 +407,10 @@
             }
         } else {
             this.each(node => {
-                node._mQuery = node._mQuery ?? {}
-                node._mQuery.data = node._mQuery.data ?? {}
                 if (value != null) {
-                    node._mQuery.data[key] = value
+                    node.dataset[key] = value instanceof Object ? JSON.stringify(value) : value
                 } else {
-                    delete node._mQuery.data[key]
+                    delete node.dataset[key]
                 }
             })
             return this
@@ -432,14 +419,7 @@
 
     removeData(key) {
         this.each(node => {
-            node._mQuery = node._mQuery ?? {}
-            if (arguments.length == 0) {
-                node._mQuery.data = {}
-            } else if (key != null && node._mQuery.data) {
-                delete node._mQuery.data[key]
-            } else {
-                node._mQuery.data = {}
-            }
+            delete node.dataset[key]
         })
         return this
     }

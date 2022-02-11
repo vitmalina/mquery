@@ -381,11 +381,11 @@ $(element).css(object) // => collection
 
 #### data()
 
-Without arguments, returns an object with user data and also maps all the `data-*` attributes.
+Without arguments, returns an object that maps all the `data-*` attributes.
 
-With a `key`, return the value of the user data or a corresponding `data-*` attribute.
+With a `key`, return the value of the corresponding `data-*` attribute.
 
-With both a `key` and `value`, sets the value of the user data.
+With both a `key` and `value`, sets the `data-[key]` attribute
 
 The `value` can be an object. And if <... data-...="{obj}"> is a valid JSON, it will be parsed as JSON
 
