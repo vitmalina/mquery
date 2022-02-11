@@ -1,9 +1,4 @@
-/**
- * Small library to replace basic functionality of jQuery
- * methods that start with "_" are internal
- */
-
- class Query {
+class Query {
     constructor(selector, context, previous) {
         this.version = 0.4
         this.context = context ?? document
@@ -474,6 +469,7 @@
 }
 // create a new object each time
 let query = function (selector, context) {
+    // if a function, use as onload event
     if (typeof selector == 'function') {
         window.addEventListener('load', selector)
     } else {

@@ -1,9 +1,5 @@
-/* mQuery 0.4 (nightly) (2/11/2022, 8:49:30 AM), vitmalina@gmail.com */
-/**
- * Small library to replace basic functionality of jQuery
- * methods that start with "_" are internal
- */
- class Query {
+/* mQuery 0.4 (nightly) (2/11/2022, 8:51:48 AM), vitmalina@gmail.com */
+class Query {
     constructor(selector, context, previous) {
         this.version = 0.4
         this.context = context ?? document
@@ -433,6 +429,7 @@
 }
 // create a new object each time
 let query = function (selector, context) {
+    // if a function, use as onload event
     if (typeof selector == 'function') {
         window.addEventListener('load', selector)
     } else {
