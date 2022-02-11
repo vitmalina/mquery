@@ -1,10 +1,7 @@
-/* mQuery 0.3 (nightly) (2/11/2022, 7:59:34 AM), vitmalina@gmail.com */
+/* mQuery 0.3 (nightly) (2/11/2022, 8:47:48 AM), vitmalina@gmail.com */
 /**
  * Small library to replace basic functionality of jQuery
  * methods that start with "_" are internal
- *
- * TODO:
- *  - .data(name, 1) => el.dataset.name
  */
  class Query {
     constructor(selector, context, previous) {
@@ -266,6 +263,16 @@
             callback = options
             options = undefined
         }
+        if (options?.delegate) {
+            let fun = callback
+            let delegate = options.delegate
+            callback = function (event) {
+                if (event.target.matches(delegate)) {
+                    fun(event)
+                }
+            }
+            delete options.delegate
+        }
         this.each(node => {
             this._save(node, 'events', [{ event, scope, callback, options }])
             node.addEventListener(event, callback, options)
@@ -279,7 +286,7 @@
             options = undefined
         }
         this.each(node => {
-            if (node._mQuery && Array.isArray(node._mQuery.events)) {
+            if (Array.isArray(node._mQuery?.events)) {
                 for (let i = node._mQuery.events.length - 1; i >= 0; i--) {
                     let evt = node._mQuery.events[i]
                     if (scope == null || scope === '') {
@@ -357,18 +364,10 @@
     data(key, value) {
         if (arguments.length < 2) {
             if (this[0]) {
-                let data = this[0]._mQuery?.data ?? {}
-                // also pick all atributes that start with data-*
-                Array.from(this[0].attributes).forEach(attr => {
-                    if (attr.name.substr(0, 5) == 'data-') {
-                        let val = attr.value
-                        let nm  = attr.name.substr(5)
-                        // if it is JSON - parse it
-                        if (['[', '{'].includes(String(val).substr(0, 1))) {
-                            try { val = JSON.parse(val) } catch(e) { val = attr.value }
-                        }
-                        // attributes have lower priority than set with data()
-                        if (data[nm] === undefined) data[nm] = val
+                let data = Object.assign({}, this[0].dataset)
+                Object.keys(data).forEach(key => {
+                    if (data[key].startsWith('[') || data[key].startsWith('{')) {
+                        try { data[key] = JSON.parse(data[key]) } catch(e) {}
                     }
                 })
                 return key ? data[key] : data
@@ -377,12 +376,10 @@
             }
         } else {
             this.each(node => {
-                node._mQuery = node._mQuery ?? {}
-                node._mQuery.data = node._mQuery.data ?? {}
                 if (value != null) {
-                    node._mQuery.data[key] = value
+                    node.dataset[key] = value instanceof Object ? JSON.stringify(value) : value
                 } else {
-                    delete node._mQuery.data[key]
+                    delete node.dataset[key]
                 }
             })
             return this
@@ -390,22 +387,16 @@
     }
     removeData(key) {
         this.each(node => {
-            node._mQuery = node._mQuery ?? {}
-            if (arguments.length == 0) {
-                node._mQuery.data = {}
-            } else if (key != null && node._mQuery.data) {
-                delete node._mQuery.data[key]
-            } else {
-                node._mQuery.data = {}
-            }
+            delete node.dataset[key]
         })
         return this
     }
     show() {
         return this.each(node => {
-            let prev = node._mQuery.prevDisplay
-            node.style.display = prev ?? 'inherit'
-            this._save(node, 'prevDisplay', undefined)
+            if (node.style.display == 'none') {
+                node.style.display = node._mQuery?.prevDisplay ?? 'inherit'
+                this._save(node, 'prevDisplay', undefined)
+            }
         })
     }
     hide() {
