@@ -290,6 +290,16 @@
             callback = options
             options = undefined
         }
+        if (options?.delegate) {
+            let fun = callback
+            let delegate = options.delegate
+            callback = function (event) {
+                if (event.target.matches(delegate)) {
+                    fun(event)
+                }
+            }
+            delete options.delegate
+        }
         this.each(node => {
             this._save(node, 'events', [{ event, scope, callback, options }])
             node.addEventListener(event, callback, options)
@@ -304,7 +314,7 @@
             options = undefined
         }
         this.each(node => {
-            if (node._mQuery && Array.isArray(node._mQuery.events)) {
+            if (Array.isArray(node._mQuery?.events)) {
                 for (let i = node._mQuery.events.length - 1; i >= 0; i--) {
                     let evt = node._mQuery.events[i]
                     if (scope == null || scope === '') {
@@ -436,9 +446,10 @@
 
     show() {
         return this.each(node => {
-            let prev = node._mQuery.prevDisplay
-            node.style.display = prev ?? 'inherit'
-            this._save(node, 'prevDisplay', undefined)
+            if (node.style.display == 'none') {
+                node.style.display = node._mQuery?.prevDisplay ?? 'inherit'
+                this._save(node, 'prevDisplay', undefined)
+            }
         })
     }
 

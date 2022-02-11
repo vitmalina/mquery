@@ -493,16 +493,20 @@ $(element).remove() // => collection
 
 Adds event listener to each element in the collection.
 
-Allows to add custom scoping for the event so multiple can be easily removed. If event name has a dot (for example `event.scope`),
-anythign after the dot is considered a scope.
+Allows to add custom scoping for the event so multiple events can be removed easily. If event name has a dot (for
+example `event.scope`), anything after the dot is considered a scope.
 
 You can optionally pass options that include { caption: t/f, once: t/f, passive: t/f, signal },
 [MDN Documentation](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener)
+
+Event delegation is also supported, if you pass option.delegate, it will be used to trigger only when delegate matches event's
+target.
 
 ```js
 $(element).on(event) // => collection
 $(element).on(event, handler) // => collection
 $(element).on(event, options, handler) // => collection
+$(element).on(event, { delegate: 'a' }, handler) // event delegation (only a elements) => collection
 ```
 
 #### off()

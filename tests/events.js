@@ -13,4 +13,8 @@ $(function () {
     $('.button2').on('click', () => {
         $('.span1').show()
     })
+
+    $('.span1').closest('div').on('click', { delegate: '.span1' }, (event) => {
+        console.log('click', event.target, event)
+    })
 })
