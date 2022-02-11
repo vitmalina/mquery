@@ -81,6 +81,18 @@
         return self
     }
 
+    _save(node, name, value) {
+        node._mQuery = node._mQuery ?? {}
+        if (Array.isArray(value)) {
+            node._mQuery[name] = node._mQuery[name] ?? []
+            node._mQuery[name].push(...value)
+        } if (value == null) {
+            delete node._mQuery[name];
+        } else {
+            node._mQuery[name] = value
+        }
+    }
+
     get(index) {
         if (index < 0) index = this.length + index
         let node = this[index]
@@ -279,9 +291,7 @@
             options = undefined
         }
         this.each(node => {
-            node._mQuery = node._mQuery ?? {}
-            node._mQuery.events = node._mQuery.events ?? []
-            node._mQuery.events.push({ event, scope, callback, options })
+            this._save(node, 'events', [{ event, scope, callback, options }])
             node.addEventListener(event, callback, options)
         })
         return this
@@ -424,6 +434,24 @@
         return this
     }
 
+    show() {
+        return this.each(node => {
+            let prev = node._mQuery.prevDisplay
+            node.style.display = prev ?? 'inherit'
+            this._save(node, 'prevDisplay', undefined)
+        })
+    }
+
+    hide() {
+        return this.each(node => {
+            let prev = node.style.display
+            if (prev != 'none') {
+                this._save(node, 'prevDisplay', prev)
+            }
+            node.style.display = 'none'
+        })
+    }
+
     empty() {
         return this.html('')
     }
@@ -438,14 +466,6 @@
 
     val(value) {
         return this.attr('value', value)
-    }
-
-    show() {
-        return this.css('display', 'inherit')
-    }
-
-    hide() {
-        return this.css('display', 'none')
     }
 
     toggle() {
@@ -463,11 +483,13 @@
 }
 // create a new object each time
 let query = function (selector, context) {
-    return new Query(selector, context)
+    if (typeof selector == 'function') {
+        window.addEventListener('load', selector)
+    } else {
+        return new Query(selector, context)
+    }
 }
 // allows to create document fragments
 query.html = (str) => { return Query._fragment(str) }
-let $ = query
 
-export default $
-export { $, query, Query }
+export { query as $, query as default, query, Query }

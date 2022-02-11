@@ -178,15 +178,18 @@ $('body').append(frag)
 | Collection | Attribute/Property | Change DOM | Events | Short-hand |
 | ---------- | ------------------ | ---------- | ------ | --------- |
 | [find()](#find)       | [attr()](#attr)               | [after()](#after)     | [on()](#on)           | [val()](#val)       |
-| [closest()](#closest) | [removeAttr()](#removeattr)   | [before()](#before)   | [off()](#off)         | [show()](#show)     |
-| [get()](#get)         | [prop()](#prop)               | [append()](#append)   | [trigger()](#trigger) | [hide()](#hide)     |
-| [eq()](#eq)           | [removeProp()](#removeprop)   | [prepend()](#prepend) |                       | [toggle()](#toggle) |
-| [each()](#each)       | [addClass()](#addclass)       | [replace()](#replace) |                       | [empty()](#empty)   |
-| [shadow()](#shadow)   | [removeClass()](#removeclass) | [remove()](#remove)   |                       | [html()](#html)     |
-| [host()](#host)       | [hasClass()](#hasclass)       |                       |                       | [text()](#text)     |
-| [filter()](#filter)   | [toggleClass()](#toggleclass) |                       |                       | [click()](#click)   |
-|                       | [css()](#css)                 |                       |                       | [change()](#change) |
+| [closest()](#closest) | [removeAttr()](#removeattr)   | [before()](#before)   | [off()](#off)         | [toggle()](#toggle) |
+| [get()](#get)         | [prop()](#prop)               | [append()](#append)   | [trigger()](#trigger) | [empty()](#empty)   |
+| [eq()](#eq)           | [removeProp()](#removeprop)   | [prepend()](#prepend) |                       | [html()](#html)     |
+| [each()](#each)       | [addClass()](#addclass)       | [replace()](#replace) |                       | [text()](#text)     |
+| [shadow()](#shadow)   | [removeClass()](#removeclass) | [remove()](#remove)   |                       | [click()](#click)   |
+| [host()](#host)       | [hasClass()](#hasclass)       |                       |                       | [change()](#change) |
+| [filter()](#filter)   | [toggleClass()](#toggleclass) |
+|                       | [css()](#css)                 |
 |                       | [data()](#data)               |
+|                       | [show()](#show)               |
+|                       | [hide()](#hide)               |
+
 
 ## Collection
 
@@ -393,6 +396,22 @@ $(element).data(key, value) // => collection
 $(element).data(object) // => collection
 ```
 
+#### show()
+
+Sets css display property to previous, if used after .hide() or 'inherit'
+
+```js
+$(element).show() // => object
+```
+
+#### hide()
+
+Sets css display property to 'none', but remembers previous value to be used when .show() is called
+
+```js
+$(element).hide() // => object
+```
+
 ## Change DOM
 
 #### after()
@@ -541,20 +560,6 @@ All these methods are short hand for some other call.
 $(element).val(value)
 // same as
 $(element).attr('value', value)
-```
-
-#### show()
-```js
-$(element).show()
-// same as
-$(element).css('display', 'inherit')
-```
-
-#### hide()
-```js
-$(element).hide()
-// same as
-$(element).css('display', 'none')
 ```
 
 #### toggle()
