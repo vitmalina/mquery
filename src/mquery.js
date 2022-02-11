@@ -87,9 +87,6 @@
         if (node) {
             return node
         }
-        if (index != null) {
-            return null
-        }
         return this.nodes
     }
 
