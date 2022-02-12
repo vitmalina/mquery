@@ -165,6 +165,7 @@ $(selector, context) // => collection
 $(mQuery) // => collection
 $(HTMLElement) // => collection
 $([HTMLELements]) // => collection
+$(function) // adds onload event listener => undefined
 ```
 
 You can also generate document fragment based on some html and then append it in dom.
@@ -398,7 +399,7 @@ $(element).data(object) // => collection
 
 #### show()
 
-Sets css display property to previous, if used after .hide() or 'inherit'
+Sets css display property to previous value if used after .hide() or ''
 
 ```js
 $(element).show() // => object
