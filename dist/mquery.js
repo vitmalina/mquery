@@ -1,4 +1,4 @@
-/* mQuery 0.4 (nightly) (2/11/2022, 8:51:48 AM), vitmalina@gmail.com */
+/* mQuery 0.4 (nightly) (2/12/2022, 7:03:02 AM), vitmalina@gmail.com */
 class Query {
     constructor(selector, context, previous) {
         this.version = 0.4
@@ -388,20 +388,21 @@ class Query {
         return this
     }
     show() {
-        return this.each(node => {
-            if (node.style.display == 'none') {
-                node.style.display = node._mQuery?.prevDisplay ?? 'inherit'
-                this._save(node, 'prevDisplay', undefined)
-            }
-        })
+        return this.toggle(true)
     }
     hide() {
+        return this.toggle(false)
+    }
+    toggle(force) {
         return this.each(node => {
-            let prev = node.style.display
-            if (prev != 'none') {
-                this._save(node, 'prevDisplay', prev)
+            let dsp = node.style.display
+            if ((dsp == 'none' && force == null) || force === true) { // show
+                node.style.display = node._mQuery?.prevDisplay ?? ''
+                this._save(node, 'prevDisplay', null)
+            } else { // hide
+                if (dsp != 'none') this._save(node, 'prevDisplay', dsp)
+                node.style.display = 'none'
             }
-            node.style.display = 'none'
         })
     }
     empty() {
@@ -415,10 +416,6 @@ class Query {
     }
     val(value) {
         return this.attr('value', value)
-    }
-    toggle() {
-        let dsp = this.css('display')
-        return this.css('display', dsp == 'none' ? 'inherit' : 'none')
     }
     change() {
         return this.trigger('change')
