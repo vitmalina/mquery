@@ -78,10 +78,10 @@ class Query {
         if (Array.isArray(value)) {
             node._mQuery[name] = node._mQuery[name] ?? []
             node._mQuery[name].push(...value)
-        } if (value == null) {
-            delete node._mQuery[name];
-        } else {
+        } else if (value != null) {
             node._mQuery[name] = value
+        } else {
+            delete node._mQuery[name];
         }
     }
 
@@ -453,7 +453,7 @@ class Query {
     }
 
     val(value) {
-        return this.attr('value', value)
+        return this.prop('value', value) // must be prop
     }
 
     change() {
