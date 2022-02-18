@@ -33,7 +33,8 @@ class Query {
     }
 
     static _isEl(node) {
-        return (node instanceof DocumentFragment || node instanceof HTMLElement || node instanceof Text)
+        return (node instanceof Document || node instanceof DocumentFragment
+            || node instanceof HTMLElement || node instanceof Text)
     }
 
     static _fragment(html) {
@@ -99,6 +100,11 @@ class Query {
         let nodes = [this[index]]
         if (nodes[0] == null) nodes = []
         return new Query(nodes, this.context, this) // must return a new collection
+    }
+
+    then(fun) {
+        let ret = fun(this)
+        return ret != null ? ret : this
     }
 
     find(selector) {

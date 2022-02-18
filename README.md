@@ -186,7 +186,7 @@ $('body').append(frag)
 | [shadow()](#shadow)   | [removeClass()](#removeclass) | [remove()](#remove)   |                       | [click()](#click)   |
 | [host()](#host)       | [hasClass()](#hasclass)       |                       |                       | [change()](#change) |
 | [filter()](#filter)   | [toggleClass()](#toggleclass) |
-|                       | [css()](#css)                 |
+| [then()](#then)       | [css()](#css)                 |
 |                       | [data()](#data)               |
 |                       | [show()](#show)               |
 |                       | [hide()](#hide)               |
@@ -264,6 +264,15 @@ Returns collection filtered by a selector, an element or a function. Returns a n
 $(element).filter(selector) // => collection
 $(element).filter(element) // => collection
 $(element).filter(func) // => collection
+```
+
+#### then()
+
+Executes a function passing collection into it as the argument. If functionr returns != null, it will become this
+object for the rest of the chain.
+
+```js
+$(element).then(func) // => return != null ? retutn : collection
 ```
 
 ## Attribute/Property
