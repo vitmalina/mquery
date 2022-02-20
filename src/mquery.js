@@ -122,7 +122,7 @@ class Query {
         let nodes = []
         this.each(node => {
             if (node === selector
-                || (typeof selector == 'string' && node.matches(selector))
+                || (typeof selector == 'string' && node.matches && node.matches(selector))
                 || (typeof selector == 'function' && selector(node))
             ) {
                 nodes.push(node)
@@ -312,8 +312,11 @@ class Query {
         if (options?.delegate) {
             let fun = callback
             let delegate = options.delegate
-            callback = function (event) {
-                if (event.target.matches(delegate)) {
+            callback = (event) => {
+                // event.target or any ancestors match delegate selector
+                let parent = query(event.target).parents(delegate)
+                if (parent.length > 0) { event.delegate = parent[0] } else { event.delegate = event.target }
+                if (event.target.matches(delegate) || parent.length > 0) {
                     fun(event)
                 }
             }
