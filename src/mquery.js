@@ -173,6 +173,27 @@ class Query {
         return new Query(nodes, this.context, this) // must return a new collection
     }
 
+    parent(selector) {
+        return this.parents(selector, true)
+    }
+
+    parents(selector, firstOnly) {
+        let nodes = []
+        let add = (node) => {
+            if (nodes.indexOf(node) == -1) {
+                nodes.push(node)
+            }
+            if (!firstOnly && node.parentNode) {
+                return add(node.parentNode)
+            }
+        }
+        this.each(node => {
+            if (node.parentNode) add(node.parentNode)
+        })
+        let col = new Query(nodes, this.context, this)
+        return selector ? col.filter(selector) : col
+    }
+
     each(func) {
         this.nodes.forEach((node, ind) => { func(node, ind, this) })
         return this

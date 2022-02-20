@@ -187,8 +187,8 @@ $('body').append(frag)
 | [host()](#host)       | [hasClass()](#hasclass)       |                       |                       | [change()](#change) |
 | [filter()](#filter)   | [toggleClass()](#toggleclass) |
 | [then()](#then)       | [css()](#css)                 |
-|                       | [data()](#data)               |
-|                       | [show()](#show)               |
+| [parent()](#parent)   | [data()](#data)               |
+| [parents()](#parents) | [show()](#show)               |
 |                       | [hide()](#hide)               |
 
 
@@ -273,6 +273,24 @@ object for the rest of the chain.
 
 ```js
 $(element).then(func) // => return != null ? retutn : collection
+```
+
+#### parent()
+
+Returns unique collection of elements who are parent of elements. Optionally filtering by selector.
+
+```js
+$(element).parent() // => collection
+$(element).parent(selector) // => collection
+```
+
+#### parents()
+
+Returns unique collection of elements who are parents of elements. Optionally filtering by selector.
+
+```js
+$(element).parents() // => collection
+$(element).parents(selector) // => collection
 ```
 
 ## Attribute/Property
