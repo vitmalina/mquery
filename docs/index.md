@@ -1,11 +1,10 @@
-## Documentation
+## Modern Query (mQuery)
 
-MQuery uses DOM's `querySelctorAll` to build a set of elements, after that you can add/remove elements in the set or
-change elements properties and attributes.
+MQuery uses `querySelctorAll` to construct a set of DOM elements, and then gives you ability to change their arrtibutes and properties, insert other DOM elements before or after or do other manupulations with the set.
 
 ### $()
 
-This is the main selector method and it returns a collection of elements.
+Matin method that returns a collection of elements filtered by the selector.
 
 ```js
 $(selector) // => collection
@@ -16,7 +15,7 @@ $([HTMLELements]) // => collection
 $(function) // adds onload event listener => undefined
 ```
 
-You can also generate document fragment based on some html and then append it in dom.
+You can generate document fragment based on some html and then append it in dom.
 ```js
 let frag = $.html('<span>A span</span> and <span> some other span </span>')
 $('body').append(frag)
