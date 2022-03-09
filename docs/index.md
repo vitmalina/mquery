@@ -4,7 +4,7 @@ MQuery uses `querySelctorAll` to construct a set of DOM elements, and then gives
 
 ### $()
 
-Matin method that returns a collection of elements filtered by the selector.
+Main method that returns a collection of elements filtered by the selector.
 
 ```js
 $(selector) // => collection

@@ -17,7 +17,7 @@ class Query {
             nodes = Array.from(this.context.querySelectorAll(selector))
         } else {
             // if selector is itterable, then try to create nodes from it, also supports jQuery
-            let arr = Array.from(selector)
+            let arr = Array.from(selector ?? [])
             if (typeof selector == 'object' && Array.isArray(arr)) {
                 nodes = arr
             } else {
@@ -354,8 +354,8 @@ class Query {
                     let evt = node._mQuery.events[i]
                     if (scope == null || scope === '') {
                         // if no scope, has to be exact match
-                        if (evt.event == event && evt.scope == scope && evt.callback == callback) {
-                            node.removeEventListener(event, callback, options)
+                        if (evt.event == event && evt.scope == scope && (evt.callback == callback || callback == null)) {
+                            node.removeEventListener(event, evt.callback, evt.options)
                             node._mQuery.events.splice(i, 1)
                         }
                     } else {
@@ -474,7 +474,7 @@ class Query {
         return this.each(node => {
             let dsp = node.style.display
             if ((dsp == 'none' && force == null) || force === true) { // show
-                node.style.display = node._mQuery?.prevDisplay ?? ''
+                node.style.display = node._mQuery?.prevDisplay ?? 'block'
                 this._save(node, 'prevDisplay', null)
             } else { // hide
                 if (dsp != 'none') this._save(node, 'prevDisplay', dsp)
