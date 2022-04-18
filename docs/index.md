@@ -366,7 +366,7 @@ $(element).remove() // => collection
 
 #### on()
 
-Adds event listener to each element in the collection.
+Adds event listener to each element in the collection. Allows to add multiple events separated by the space or the comma.
 
 Allows to add custom scoping for the event so multiple events can be removed easily. If event name has a dot (for
 example `event.scope`), anything after the dot is considered a scope.
@@ -378,23 +378,22 @@ Event delegation is also supported, if you pass option.delegate, it will be used
 target.
 
 ```js
-$(element).on(event) // => collection
-$(element).on(event, handler) // => collection
-$(element).on(event, options, handler) // => collection
-$(element).on(event, { delegate: 'a' }, handler) // event delegation (only a elements) => collection
+$(element).on(events, handler) // => collection
+$(element).on(events, options, handler) // => collection
+$(element).on(events, { delegate: 'a' }, handler) // event delegation (only a elements) => collection
 ```
 
 #### off()
 
-Removes event listener from each element in the collection.
+Removes event listener from each element in the collection. Allows to remove multiple events separated by the space or the comma.
 
-Allows to remove events with custom scoping . If event name has a dot (for example `event.scope`),
-anythign after the dot is considered a scope.
+Allows to remove events with custom scoping. If event name has a dot (for example `event.scope`), anythign after the dot is considered a scope.
 
 Removes all event listeners if called without arguments.
 
 ```js
-$(element).off(event, handler) // => collection
+$(element).off(events, handler) // => collection
+$(element).off(events, options, handler) // => collection
 $(element).off('.my-scope') // removes all events with custom scope => collection
 $(element).off('.*') // removes all events => collection
 ```
