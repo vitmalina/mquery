@@ -1,7 +1,7 @@
-/* mQuery 0.4 (nightly) (2/12/2022, 7:03:02 AM), vitmalina@gmail.com */
+/* mQuery 0.4 (nightly) (4/22/2022, 9:05:25 AM), vitmalina@gmail.com */
 class Query {
     constructor(selector, context, previous) {
-        this.version = 0.4
+        this.version = 0.5
         this.context = context ?? document
         this.previous = previous ?? null
         let nodes = []
@@ -16,9 +16,11 @@ class Query {
                 throw new Error('Invalid context')
             }
             nodes = Array.from(this.context.querySelectorAll(selector))
+        } else if (selector == null) {
+            nodes = []
         } else {
             // if selector is itterable, then try to create nodes from it, also supports jQuery
-            let arr = Array.from(selector)
+            let arr = Array.from(selector ?? [])
             if (typeof selector == 'object' && Array.isArray(arr)) {
                 nodes = arr
             } else {
@@ -33,7 +35,8 @@ class Query {
         })
     }
     static _isEl(node) {
-        return (node instanceof DocumentFragment || node instanceof HTMLElement || node instanceof Text)
+        return (node instanceof Document || node instanceof DocumentFragment
+            || node instanceof HTMLElement || node instanceof Text)
     }
     static _fragment(html) {
         let tmpl = document.createElement('template')
@@ -46,27 +49,37 @@ class Query {
         if (len < 1) return
         let isEl = Query._isEl(html)
         let self = this
+        // TODO: need good unit test coverage for this function
         if (typeof html == 'string') {
             this.each(node => {
-                let cln = Query._fragment(html)
-                if (method == 'replaceWith') {
-                    // replace nodes, but keep reference to them
-                    nodes.push(...cln.childNodes)
-                }
-                node[method](cln) // inserts nodes or text
+                let clone = Query._fragment(html)
+                nodes.push(...clone.childNodes)
+                node[method](clone)
             })
-            if (method == 'replaceWith') {
-                self = new Query(nodes, this.context, this) // must return a new collection
-            }
+        } else if (html instanceof Query) {
+            let single = (len == 1 && html.length == 1)
+            html.each(el => {
+                this.each(node => {
+                    // if insert before a single node, just move new one, else clone and move it
+                    let clone = (single ? el : el.cloneNode(true))
+                    node[method](clone)
+                    nodes.push(clone)
+                })
+            })
+            if (!single) html.remove()
         } else if (isEl) {
             this.each(node => {
-                let cln = Query._fragment(html.outerHTML)
-                node[method](len === 1 ? html : cln)
-                if (len > 1 && isEl) nodes.push(...cln.childNodes)
+                // if insert before a single node, just move new one, else clone and move it
+                let clone = (len === 1 ? html : Query._fragment(html.outerHTML))
+                nodes.push(...(len === 1 ? [html] : clone.childNodes))
+                node[method](clone)
             })
-            if (len > 1 && isEl) html.remove()
+            if (len > 1) html.remove()
         } else {
             throw new Error(`Incorrect argument for "${method}(html)". It expects one string argument.`)
+        }
+        if (method == 'replaceWith') {
+            self = new Query(nodes, this.context, this) // must return a new collection
         }
         return self
     }
@@ -75,10 +88,10 @@ class Query {
         if (Array.isArray(value)) {
             node._mQuery[name] = node._mQuery[name] ?? []
             node._mQuery[name].push(...value)
-        } if (value == null) {
-            delete node._mQuery[name];
-        } else {
+        } else if (value != null) {
             node._mQuery[name] = value
+        } else {
+            delete node._mQuery[name];
         }
     }
     get(index) {
@@ -87,6 +100,9 @@ class Query {
         if (node) {
             return node
         }
+        if (index != null) {
+            return null
+        }
         return this.nodes
     }
     eq(index) {
@@ -94,6 +110,10 @@ class Query {
         let nodes = [this[index]]
         if (nodes[0] == null) nodes = []
         return new Query(nodes, this.context, this) // must return a new collection
+    }
+    then(fun) {
+        let ret = fun(this)
+        return ret != null ? ret : this
     }
     find(selector) {
         let nodes = []
@@ -109,7 +129,7 @@ class Query {
         let nodes = []
         this.each(node => {
             if (node === selector
-                || (typeof selector == 'string' && node.matches(selector))
+                || (typeof selector == 'string' && node.matches && node.matches(selector))
                 || (typeof selector == 'function' && selector(node))
             ) {
                 nodes.push(node)
@@ -155,6 +175,25 @@ class Query {
             fun(node)
         })
         return new Query(nodes, this.context, this) // must return a new collection
+    }
+    parent(selector) {
+        return this.parents(selector, true)
+    }
+    parents(selector, firstOnly) {
+        let nodes = []
+        let add = (node) => {
+            if (nodes.indexOf(node) == -1) {
+                nodes.push(node)
+            }
+            if (!firstOnly && node.parentNode) {
+                return add(node.parentNode)
+            }
+        }
+        this.each(node => {
+            if (node.parentNode) add(node.parentNode)
+        })
+        let col = new Query(nodes, this.context, this)
+        return selector ? col.filter(selector) : col
     }
     each(func) {
         this.nodes.forEach((node, ind) => { func(node, ind, this) })
@@ -224,7 +263,7 @@ class Query {
     }
     toggleClass(classes, force) {
         // split by comma or space
-        if (typeof classes == 'string') classes = classes.split(/[ ,]+/)
+        if (typeof classes == 'string') classes = classes.split(/[,\s]+/)
         this.each(node => {
             let classes2 = classes
             // if not defined, remove all classes
@@ -241,7 +280,7 @@ class Query {
     }
     hasClass(classes) {
         // split by comma or space
-        if (typeof classes == 'string') classes = classes.split(/[ ,]+/)
+        if (typeof classes == 'string') classes = classes.split(/[,\s]+/)
         if (classes == null && this.length > 0) {
             return Array.from(this[0].classList)
         }
@@ -253,52 +292,64 @@ class Query {
         })
         return ret
     }
-    on(eventScope, options, callback) {
-        let [ event, scope ] = String(eventScope).toLowerCase().split('.')
+    on(events, options, callback) {
         if (typeof options == 'function') {
             callback = options
             options = undefined
         }
+        let delegate
         if (options?.delegate) {
-            let fun = callback
-            let delegate = options.delegate
-            callback = function (event) {
-                if (event.target.matches(delegate)) {
-                    fun(event)
-                }
-            }
-            delete options.delegate
+            delegate = options.delegate
+            delete options.delegate // not to pass to addEventListener
         }
-        this.each(node => {
-            this._save(node, 'events', [{ event, scope, callback, options }])
-            node.addEventListener(event, callback, options)
-        })
-        return this
-    }
-    off(eventScope, options, callback) {
-        let [ event, scope ] = String(eventScope).toLowerCase().split('.')
-        if (typeof options == 'function') {
-            callback = options
-            options = undefined
-        }
-        this.each(node => {
-            if (Array.isArray(node._mQuery?.events)) {
-                for (let i = node._mQuery.events.length - 1; i >= 0; i--) {
-                    let evt = node._mQuery.events[i]
-                    if (scope == null || scope === '') {
-                        // if no scope, has to be exact match
-                        if (evt.event == event && evt.scope == scope && evt.callback == callback) {
-                            node.removeEventListener(event, callback, options)
-                            node._mQuery.events.splice(i, 1)
-                        }
-                    } else {
-                        if ((evt.event == event || event === '') && (evt.scope == scope || scope === '*')) {
-                            node.removeEventListener(evt.event, evt.callback, evt.options)
-                            node._mQuery.events.splice(i, 1)
-                        }
+        events = events.split(/[,\s]+/) // separate by comma or space
+        events.forEach(eventName => {
+            let [ event, scope ] = String(eventName).toLowerCase().split('.')
+            if (delegate) {
+                let fun = callback
+                callback = (event) => {
+                    // event.target or any ancestors match delegate selector
+                    let parent = query(event.target).parents(delegate)
+                    if (parent.length > 0) { event.delegate = parent[0] } else { event.delegate = event.target }
+                    if (event.target.matches(delegate) || parent.length > 0) {
+                        fun(event)
                     }
                 }
             }
+            this.each(node => {
+                this._save(node, 'events', [{ event, scope, callback, options }])
+                node.addEventListener(event, callback, options)
+            })
+        })
+        return this
+    }
+    off(events, options, callback) {
+        if (typeof options == 'function') {
+            callback = options
+            options = undefined
+        }
+        events = events.split(/[,\s]+/) // separate by comma or space
+        events.forEach(eventName => {
+            let [ event, scope ] = String(eventName).toLowerCase().split('.')
+            this.each(node => {
+                if (Array.isArray(node._mQuery?.events)) {
+                    for (let i = node._mQuery.events.length - 1; i >= 0; i--) {
+                        let evt = node._mQuery.events[i]
+                        if (scope == null || scope === '') {
+                            // if no scope, has to be exact match
+                            if (evt.event == event && evt.scope == scope && (evt.callback == callback || callback == null)) {
+                                node.removeEventListener(event, evt.callback, evt.options)
+                                node._mQuery.events.splice(i, 1)
+                            }
+                        } else {
+                            if ((evt.event == event || event === '') && (evt.scope == scope || scope === '*')) {
+                                node.removeEventListener(evt.event, evt.callback, evt.options)
+                                node._mQuery.events.splice(i, 1)
+                            }
+                        }
+                    }
+                }
+            })
         })
         return this
     }
@@ -358,6 +409,9 @@ class Query {
         return this
     }
     data(key, value) {
+        if (key && key.indexOf('-') != -1) {
+            console.error(`Key "${key}" contains "-" (dash). Dashes are not allowed in property names. Use camelCase instead.`)
+        }
         if (arguments.length < 2) {
             if (this[0]) {
                 let data = Object.assign({}, this[0].dataset)
@@ -415,7 +469,7 @@ class Query {
         return this.prop('textContent', text)
     }
     val(value) {
-        return this.attr('value', value)
+        return this.prop('value', value) // must be prop
     }
     change() {
         return this.trigger('change')
@@ -433,6 +487,6 @@ let query = function (selector, context) {
         return new Query(selector, context)
     }
 }
-// allows to create document fragments
-query.html = (str) => { return Query._fragment(str) }
+// str -> doc-fragment
+query.html = (str) => { let frag = Query._fragment(str); return query(frag.children, frag)  }
 export { query as $, query as default, query, Query }

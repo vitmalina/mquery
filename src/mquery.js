@@ -1,6 +1,6 @@
 class Query {
     constructor(selector, context, previous) {
-        this.version = 0.4
+        this.version = 0.5
         this.context = context ?? document
         this.previous = previous ?? null
         let nodes = []
