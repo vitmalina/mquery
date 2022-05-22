@@ -1,7 +1,7 @@
-/* mQuery 0.4 (nightly) (4/22/2022, 9:05:25 AM), vitmalina@gmail.com */
+/* mQuery 0.4 (nightly) (5/22/2022, 9:36:26 AM), vitmalina@gmail.com */
 class Query {
     constructor(selector, context, previous) {
-        this.version = 0.5
+        this.version = 0.4
         this.context = context ?? document
         this.previous = previous ?? null
         let nodes = []
@@ -137,6 +137,22 @@ class Query {
         })
         return new Query(nodes, this.context, this) // must return a new collection
     }
+    next() {
+        let nodes = []
+        this.each(node => {
+            let nn = node.nextElementSibling
+            if (nn) { nodes.push(nn) }
+        })
+        return new Query(nodes, this.context, this) // must return a new collection
+    }
+    prev() {
+        let nodes = []
+        this.each(node => {
+            let nn = node.previousElementSibling
+            if (nn) { nodes.push(nn)}
+        })
+        return new Query(nodes, this.context, this) // must return a new collection
+    }
     shadow(selector) {
         let nodes = []
         this.each(node => {
@@ -222,11 +238,13 @@ class Query {
     css(key, value) {
         let css = key
         let len = arguments.length
-        if (len === 0 || (len ===1 && typeof key == 'string')) {
+        if (len === 0 || (len === 1 && typeof key == 'string')) {
             if (this[0]) {
+                let st = this[0].style
                 // do not do computedStyleMap as it is not what on immediate element
                 if (typeof key == 'string') {
-                    return this[0].style[key]
+                    let pri = st.getPropertyPriority(key)
+                    return st.getPropertyValue(key) + (pri ? '!' + pri : '')
                 } else {
                     return Object.fromEntries(
                         this[0].style.cssText
@@ -247,7 +265,8 @@ class Query {
             }
             this.each((el, ind) => {
                 Object.keys(css).forEach(key => {
-                    el.style[key] = css[key]
+                    let imp = String(css[key]).toLowerCase().includes('!important') ? 'important' : ''
+                    el.style.setProperty(key, String(css[key]).replace(/\!important/i, ''), imp)
                 })
             })
             return this
@@ -409,6 +428,10 @@ class Query {
         return this
     }
     data(key, value) {
+        if (key instanceof Object) {
+            Object.entries(key).forEach(item => { this.data(item[0], item[1]) })
+            return
+        }
         if (key && key.indexOf('-') != -1) {
             console.error(`Key "${key}" contains "-" (dash). Dashes are not allowed in property names. Use camelCase instead.`)
         }
@@ -449,13 +472,16 @@ class Query {
     }
     toggle(force) {
         return this.each(node => {
-            let dsp = node.style.display
-            if ((dsp == 'none' && force == null) || force === true) { // show
-                node.style.display = node._mQuery?.prevDisplay ?? ''
+            let prev = node.style.display
+            let dsp  = getComputedStyle(node).display
+            let isHidden = (prev == 'none' || dsp == 'none')
+            if (isHidden && (force == null || force === true)) { // show
+                node.style.display = node._mQuery?.prevDisplay ?? (prev == dsp ? '' : 'block')
                 this._save(node, 'prevDisplay', null)
-            } else { // hide
+            }
+            if (!isHidden && (force == null || force === false)) { // hide
                 if (dsp != 'none') this._save(node, 'prevDisplay', dsp)
-                node.style.display = 'none'
+                node.style.setProperty('display', 'none')
             }
         })
     }
@@ -482,7 +508,11 @@ class Query {
 let query = function (selector, context) {
     // if a function, use as onload event
     if (typeof selector == 'function') {
-        window.addEventListener('load', selector)
+        if (document.readyState == 'complete') {
+            selector()
+        } else {
+            window.addEventListener('load', selector)
+        }
     } else {
         return new Query(selector, context)
     }
