@@ -36,7 +36,8 @@ $('body').append(frag)
 | [then()](#then)       | [css()](#css)                 |
 | [parent()](#parent)   | [data()](#data)               |
 | [parents()](#parents) | [show()](#show)               |
-|                       | [hide()](#hide)               |
+| [next()](#next)       | [hide()](#hide)               |
+| [prev()](#prev)       |
 
 
 ## Collection
@@ -138,6 +139,22 @@ Returns unique collection of elements who are parents of elements. Optionally fi
 ```js
 $(element).parents() // => collection
 $(element).parents(selector) // => collection
+```
+
+#### next()
+
+Returns collection of next DOM elements for each element of current collection.
+
+```js
+$(element).next() // => collection
+```
+
+#### prev()
+
+Returns collection of previous DOM elements for each element of current collection.
+
+```js
+$(element).prev() // => collection
 ```
 
 ## Attribute/Property
@@ -258,7 +275,8 @@ $(element).css(object) // => collection
 
 Without arguments, returns an object that maps all the `data-*` attributes.
 
-With a `key`, return the value of the corresponding `data-*` attribute.
+With a `key`, return the value of the corresponding `data-*` attribute. If key is an object, it will set data for
+each object entity.
 
 With both a `key` and `value`, sets the `data-[key]` attribute
 
