@@ -35,9 +35,9 @@ $('body').append(frag)
 | [filter()](#filter)   | [toggleClass()](#toggleclass) |
 | [then()](#then)       | [css()](#css)                 |
 | [parent()](#parent)   | [data()](#data)               |
-| [parents()](#parents) | [show()](#show)               |
-| [next()](#next)       | [hide()](#hide)               |
-| [prev()](#prev)       |
+| [parents()](#parents) | [removeData()](#removeData)   |
+| [next()](#next)       | [show()](#show)               |
+| [prev()](#prev)       | [hide()](#hide)               |
 
 
 ## Collection
@@ -287,6 +287,16 @@ $(element).data() // => object
 $(element).data(key) // => value
 $(element).data(key, value) // => collection
 $(element).data(object) // => collection
+```
+
+#### removeData()
+
+Removes the corresponding `data-*` attribute for all elemenrs in the collection.
+
+Accepts multiple `keys` (space or comma separated).
+
+```js
+$(element).removeData(key) // => object
 ```
 
 #### show()
