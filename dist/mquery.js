@@ -1,13 +1,13 @@
-/* mQuery 0.4 (nightly) (5/22/2022, 9:36:26 AM), vitmalina@gmail.com */
+/* mQuery 0.4 (nightly) (5/27/2022, 9:29:19 AM), vitmalina@gmail.com */
 class Query {
     constructor(selector, context, previous) {
-        this.version = 0.4
+        this.version = 0.5
         this.context = context ?? document
         this.previous = previous ?? null
         let nodes = []
         if (Array.isArray(selector)) {
             nodes = selector
-        } else if (Query._isEl(selector)) {
+        } else if (selector instanceof Node) { // any html element
             nodes = [selector]
         } else if (selector instanceof Query) {
             nodes = selector.nodes
@@ -34,10 +34,6 @@ class Query {
             this[ind] = node
         })
     }
-    static _isEl(node) {
-        return (node instanceof Document || node instanceof DocumentFragment
-            || node instanceof HTMLElement || node instanceof Text)
-    }
     static _fragment(html) {
         let tmpl = document.createElement('template')
         tmpl.innerHTML = html
@@ -47,7 +43,6 @@ class Query {
         let nodes = []
         let len  = this.length
         if (len < 1) return
-        let isEl = Query._isEl(html)
         let self = this
         // TODO: need good unit test coverage for this function
         if (typeof html == 'string') {
@@ -67,7 +62,7 @@ class Query {
                 })
             })
             if (!single) html.remove()
-        } else if (isEl) {
+        } else if (html instanceof Node) { // any HTML element
             this.each(node => {
                 // if insert before a single node, just move new one, else clone and move it
                 let clone = (len === 1 ? html : Query._fragment(html.outerHTML))
@@ -459,8 +454,9 @@ class Query {
         }
     }
     removeData(key) {
+        if (typeof key == 'string') key = key.split(/[,\s]+/)
         this.each(node => {
-            delete node.dataset[key]
+            key.forEach(k => { delete node.dataset[k] })
         })
         return this
     }
