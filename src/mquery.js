@@ -1,6 +1,6 @@
 class Query {
     constructor(selector, context, previous) {
-        this.version = 0.5
+        this.version = 0.6
         this.context = context ?? document
         this.previous = previous ?? null
         let nodes = []
@@ -38,6 +38,24 @@ class Query {
         let tmpl = document.createElement('template')
         tmpl.innerHTML = html
         return tmpl.content
+    }
+
+    static _fixProp(name) {
+        let fixes = {
+            cellpadding: "cellPadding",
+            cellspacing: "cellSpacing",
+            class: "className",
+            colspan: "colSpan",
+            contenteditable: "contentEditable",
+            for: "htmlFor",
+            frameborder: "frameBorder",
+            maxlength: "maxLength",
+            readonly: "readOnly",
+            rowspan: "rowSpan",
+            tabindex: "tabIndex",
+            usemap: "useMap"
+        }
+        return fixes[name] ? fixes[name] : name
     }
 
     _insert(method, html) {
@@ -219,6 +237,11 @@ class Query {
         })
         let col = new Query(nodes, this.context, this)
         return selector ? col.filter(selector) : col
+    }
+
+    add(more) {
+        let nodes = more instanceof Query ? more.nodes : (Array.isArray(more) ? more : [more])
+        return new Query(this.nodes.concat(nodes), this.context, this) // must return a new collection
     }
 
     each(func) {
@@ -443,7 +466,7 @@ class Query {
             let obj = {}
             if (typeof name == 'object') obj = name; else obj[name] = value
             this.each(node => {
-                Object.entries(obj).forEach(([nm, val]) => { node[nm] = val })
+                Object.entries(obj).forEach(([nm, val]) => { node[Query._fixProp(nm)] = val })
             })
             return this
         }
@@ -451,7 +474,7 @@ class Query {
 
     removeProp() {
         this.each(node => {
-            Array.from(arguments).forEach(prop => { delete node[prop] })
+            Array.from(arguments).forEach(prop => { delete node[Query._fixProp(prop)] })
         })
         return this
     }

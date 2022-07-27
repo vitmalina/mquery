@@ -38,6 +38,7 @@ $('body').append(frag)
 | [parents()](#parents) | [removeData()](#removeData)   |
 | [next()](#next)       | [show()](#show)               |
 | [prev()](#prev)       | [hide()](#hide)               |
+| [add()](#add)         |
 
 
 ## Collection
@@ -155,6 +156,16 @@ Returns collection of previous DOM elements for each element of current collecti
 
 ```js
 $(element).prev() // => collection
+```
+
+#### add()
+
+Adds a node or a collection to the current collection. Returns new collection.
+
+```js
+$(selector).add(mQuery) // => collection
+$(selector).add(HTMLElement) // => collection
+$(selector).add([HTMLELements]) // => collection
 ```
 
 ## Attribute/Property
