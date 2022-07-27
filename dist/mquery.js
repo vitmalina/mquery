@@ -1,13 +1,13 @@
-/* mQuery 0.4 (nightly) (5/27/2022, 9:29:19 AM), vitmalina@gmail.com */
+/* mQuery 0.4 (nightly) (7/27/2022, 8:15:58 AM), vitmalina@gmail.com */
 class Query {
     constructor(selector, context, previous) {
-        this.version = 0.5
+        this.version = 0.6
         this.context = context ?? document
         this.previous = previous ?? null
         let nodes = []
         if (Array.isArray(selector)) {
             nodes = selector
-        } else if (selector instanceof Node) { // any html element
+        } else if (selector instanceof Node || selector instanceof Window) { // any html element or Window
             nodes = [selector]
         } else if (selector instanceof Query) {
             nodes = selector.nodes
@@ -38,6 +38,23 @@ class Query {
         let tmpl = document.createElement('template')
         tmpl.innerHTML = html
         return tmpl.content
+    }
+    static _fixProp(name) {
+        let fixes = {
+            cellpadding: "cellPadding",
+            cellspacing: "cellSpacing",
+            class: "className",
+            colspan: "colSpan",
+            contenteditable: "contentEditable",
+            for: "htmlFor",
+            frameborder: "frameBorder",
+            maxlength: "maxLength",
+            readonly: "readOnly",
+            rowspan: "rowSpan",
+            tabindex: "tabIndex",
+            usemap: "useMap"
+        }
+        return fixes[name] ? fixes[name] : name
     }
     _insert(method, html) {
         let nodes = []
@@ -205,6 +222,10 @@ class Query {
         })
         let col = new Query(nodes, this.context, this)
         return selector ? col.filter(selector) : col
+    }
+    add(more) {
+        let nodes = more instanceof Query ? more.nodes : (Array.isArray(more) ? more : [more])
+        return new Query(this.nodes.concat(nodes), this.context, this) // must return a new collection
     }
     each(func) {
         this.nodes.forEach((node, ind) => { func(node, ind, this) })
@@ -411,14 +432,14 @@ class Query {
             let obj = {}
             if (typeof name == 'object') obj = name; else obj[name] = value
             this.each(node => {
-                Object.entries(obj).forEach(([nm, val]) => { node[nm] = val })
+                Object.entries(obj).forEach(([nm, val]) => { node[Query._fixProp(nm)] = val })
             })
             return this
         }
     }
     removeProp() {
         this.each(node => {
-            Array.from(arguments).forEach(prop => { delete node[prop] })
+            Array.from(arguments).forEach(prop => { delete node[Query._fixProp(prop)] })
         })
         return this
     }
