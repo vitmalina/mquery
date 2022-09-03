@@ -1,7 +1,7 @@
-/* mQuery 0.4 (nightly) (7/27/2022, 8:15:58 AM), vitmalina@gmail.com */
+/* mQuery 0.7 (nightly) (9/3/2022, 8:23:49 AM), vitmalina@gmail.com */
 class Query {
     constructor(selector, context, previous) {
-        this.version = 0.6
+        this.version = 0.7
         this.context = context ?? document
         this.previous = previous ?? null
         let nodes = []
@@ -37,7 +37,35 @@ class Query {
     static _fragment(html) {
         let tmpl = document.createElement('template')
         tmpl.innerHTML = html
+        tmpl.content.childNodes.forEach(node => {
+            let newNode = Query._scriptConvert(node)
+            if (newNode != node) {
+                tmpl.content.replaceChild(newNode, node)
+            }
+        })
         return tmpl.content
+    }
+    // innerHTML, append, etc. script tags will not be executed unless they are proper script tags
+    static _scriptConvert(node) {
+        let convert = (txtNode) => {
+            let doc = txtNode.ownerDocument
+            let scNode = doc.createElement('script')
+            scNode.text = txtNode.text
+            let attrs = txtNode.attributes
+            for (let i = 0; i < attrs.length; i++) {
+                scNode.setAttribute(attrs[i].name, attrs[i].value);
+            }
+            return scNode
+        }
+        if (node.tagName == 'SCRIPT') {
+            node = convert(node)
+        }
+        if (node.querySelectorAll) {
+            node.querySelectorAll('script').forEach(textNode => {
+                textNode.parentNode.replaceChild(convert(textNode), textNode)
+            })
+        }
+        return node
     }
     static _fixProp(name) {
         let fixes = {
@@ -74,8 +102,9 @@ class Query {
                 this.each(node => {
                     // if insert before a single node, just move new one, else clone and move it
                     let clone = (single ? el : el.cloneNode(true))
-                    node[method](clone)
                     nodes.push(clone)
+                    node[method](clone)
+                    Query._scriptConvert(clone)
                 })
             })
             if (!single) html.remove()
@@ -322,7 +351,7 @@ class Query {
         let ret = false
         this.each(node => {
             ret = ret || classes.every(className => {
-                return Array.from(node.classList).includes(className)
+                return Array.from(node.classList ?? []).includes(className)
             })
         })
         return ret
@@ -363,7 +392,7 @@ class Query {
             callback = options
             options = undefined
         }
-        events = events.split(/[,\s]+/) // separate by comma or space
+        events = (events ?? '').split(/[,\s]+/) // separate by comma or space
         events.forEach(eventName => {
             let [ event, scope ] = String(eventName).toLowerCase().split('.')
             this.each(node => {
@@ -372,12 +401,12 @@ class Query {
                         let evt = node._mQuery.events[i]
                         if (scope == null || scope === '') {
                             // if no scope, has to be exact match
-                            if (evt.event == event && evt.scope == scope && (evt.callback == callback || callback == null)) {
-                                node.removeEventListener(event, evt.callback, evt.options)
+                            if ((evt.event == event || event === '') && (evt.callback == callback || callback == null)) {
+                                node.removeEventListener(evt.event, evt.callback, evt.options)
                                 node._mQuery.events.splice(i, 1)
                             }
                         } else {
-                            if ((evt.event == event || event === '') && (evt.scope == scope || scope === '*')) {
+                            if ((evt.event == event || event === '') && evt.scope == scope) {
                                 node.removeEventListener(evt.event, evt.callback, evt.options)
                                 node._mQuery.events.splice(i, 1)
                             }
@@ -432,7 +461,13 @@ class Query {
             let obj = {}
             if (typeof name == 'object') obj = name; else obj[name] = value
             this.each(node => {
-                Object.entries(obj).forEach(([nm, val]) => { node[Query._fixProp(nm)] = val })
+                Object.entries(obj).forEach(([nm, val]) => {
+                    let prop = Query._fixProp(nm)
+                    node[prop] = val
+                    if (prop == 'innerHTML') {
+                        Query._scriptConvert(node)
+                    }
+                })
             })
             return this
         }

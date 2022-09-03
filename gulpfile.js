@@ -8,7 +8,7 @@ const replace  = require('gulp-replace')
 const del      = require('del')
 
 const comments = {
-    mquery : '/* mQuery 0.4 (nightly) ('+ (new Date()).toLocaleString('en-us') +'), vitmalina@gmail.com */\n'
+    mquery : '/* mQuery 0.7 (nightly) ('+ (new Date()).toLocaleString('en-us') +'), vitmalina@gmail.com */\n'
 }
 
 
