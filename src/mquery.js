@@ -1,6 +1,7 @@
 class Query {
+    static version = 0.7
+
     constructor(selector, context, previous) {
-        this.version = 0.7
         this.context = context ?? document
         this.previous = previous ?? null
         let nodes = []
@@ -100,7 +101,7 @@ class Query {
                 node[method](clone)
             })
         } else if (html instanceof Query) {
-            let single = (len == 1 && html.length == 1)
+            let single = (len == 1) // if inserting into a single container, then move it there
             html.each(el => {
                 this.each(node => {
                     // if insert before a single node, just move new one, else clone and move it
@@ -619,5 +620,5 @@ let query = function (selector, context) {
 }
 // str -> doc-fragment
 query.html = (str) => { let frag = Query._fragment(str); return query(frag.children, frag)  }
-
+query.version = Query.version
 export { query as $, query as default, query, Query }
