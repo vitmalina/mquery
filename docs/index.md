@@ -434,7 +434,7 @@ Removes all event listeners if called without arguments.
 $(selector).off(events, handler) // => collection
 $(selector).off(events, options, handler) // => collection
 $(selector).off('.my-scope') // removes all events with custom scope => collection
-$(selector).off('.*') // removes all events => collection
+$(selector).off() // removes all events added by on() => collection
 ```
 
 #### trigger()
