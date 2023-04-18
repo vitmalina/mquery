@@ -1,4 +1,4 @@
-/* mQuery 0.7 (nightly) (4/18/2023, 7:56:58 AM), vitmalina@gmail.com */
+/* mQuery 0.7 (nightly) (4/18/2023, 10:07:39 AM), vitmalina@gmail.com */
 class Query {
     static version = 0.7
     constructor(selector, context, previous) {
@@ -531,7 +531,12 @@ class Query {
             let dsp  = getComputedStyle(node).display
             let isHidden = (prev == 'none' || dsp == 'none')
             if (isHidden && (force == null || force === true)) { // show
-                node.style.display = node._mQuery?.prevDisplay ?? (prev == dsp && dsp != 'none' ? '' : 'block')
+                let def = node instanceof HTMLTableRowElement
+                    ? 'table-row'
+                    : node instanceof HTMLTableCellElement
+                        ? 'table-cell'
+                        : 'block'
+                node.style.display = node._mQuery?.prevDisplay ?? (prev == dsp && dsp != 'none' ? '' : def)
                 this._save(node, 'prevDisplay', null)
             }
             if (!isHidden && (force == null || force === false)) { // hide
