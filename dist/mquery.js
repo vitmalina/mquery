@@ -1,4 +1,4 @@
-/* mQuery 0.7 (nightly) (10/10/2022, 12:11:48 PM), vitmalina@gmail.com */
+/* mQuery 0.7 (nightly) (4/18/2023, 7:56:58 AM), vitmalina@gmail.com */
 class Query {
     static version = 0.7
     constructor(selector, context, previous) {
@@ -325,22 +325,25 @@ class Query {
         this.toggleClass(classes, false)
         return this
     }
-    toggleClass(classes, force) {
-        // split by comma or space
-        if (typeof classes == 'string') classes = classes.split(/[,\s]+/)
-        this.each(node => {
-            let classes2 = classes
-            // if not defined, remove all classes
-            if (classes2 == null && force === false) classes2 = Array.from(node.classList)
-            classes2.forEach(className => {
-                if (className !== '') {
-                    let act = 'toggle'
-                    if (force != null) act = force ? 'add' : 'remove'
-                    node.classList[act](className)
-                }
-            })
+    toggle(force) {
+        return this.each(node => {
+            let prev = node.style.display
+            let dsp  = getComputedStyle(node).display
+            let isHidden = (prev == 'none' || dsp == 'none')
+            if (isHidden && (force == null || force === true)) { // show
+                let def = node instanceof HTMLTableRowElement
+                    ? 'table-row'
+                    : node instanceof HTMLTableCellElement
+                        ? 'table-cell'
+                        : 'block'
+                node.style.display = node._mQuery?.prevDisplay ?? (prev == dsp && dsp != 'none' ? '' : def)
+                this._save(node, 'prevDisplay', null)
+            }
+            if (!isHidden && (force == null || force === false)) { // hide
+                if (dsp != 'none') this._save(node, 'prevDisplay', dsp)
+                node.style.setProperty('display', 'none')
+            }
         })
-        return this
     }
     hasClass(classes) {
         // split by comma or space
