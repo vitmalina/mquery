@@ -55,7 +55,7 @@ class Query {
             scNode.text = txtNode.text
             let attrs = txtNode.attributes
             for (let i = 0; i < attrs.length; i++) {
-                scNode.setAttribute(attrs[i].name, attrs[i].value);
+                scNode.setAttribute(attrs[i].name, attrs[i].value)
             }
             return scNode
         }
@@ -72,18 +72,18 @@ class Query {
 
     static _fixProp(name) {
         let fixes = {
-            cellpadding: "cellPadding",
-            cellspacing: "cellSpacing",
-            class: "className",
-            colspan: "colSpan",
-            contenteditable: "contentEditable",
-            for: "htmlFor",
-            frameborder: "frameBorder",
-            maxlength: "maxLength",
-            readonly: "readOnly",
-            rowspan: "rowSpan",
-            tabindex: "tabIndex",
-            usemap: "useMap"
+            cellpadding: 'cellPadding',
+            cellspacing: 'cellSpacing',
+            class: 'className',
+            colspan: 'colSpan',
+            contenteditable: 'contentEditable',
+            for: 'htmlFor',
+            frameborder: 'frameBorder',
+            maxlength: 'maxLength',
+            readonly: 'readOnly',
+            rowspan: 'rowSpan',
+            tabindex: 'tabIndex',
+            usemap: 'useMap'
         }
         return fixes[name] ? fixes[name] : name
     }
@@ -137,7 +137,7 @@ class Query {
         } else if (value != null) {
             node._mQuery[name] = value
         } else {
-            delete node._mQuery[name];
+            delete node._mQuery[name]
         }
     }
 
@@ -279,33 +279,26 @@ class Query {
         this.nodes.forEach((node, ind) => { func(node, ind, this) })
         return this
     }
-
     append(html) {
         return this._insert('append', html)
     }
-
     prepend(html) {
         return this._insert('prepend', html)
     }
-
     after(html) {
         return this._insert('after', html)
     }
-
     before(html) {
         return this._insert('before', html)
     }
-
     replace(html) {
         return this._insert('replaceWith', html)
     }
-
     remove() {
         // remove from dom, but keep in current query
         this.each(node => { node.remove() })
         return this
     }
-
     css(key, value) {
         let css = key
         let len = arguments.length
@@ -324,7 +317,7 @@ class Query {
                             .map(a => {
                                 return a.split(':').map(a => a.trim()) // trim strings
                             })
-                        )
+                    )
                 }
             } else {
                 return undefined
@@ -354,25 +347,22 @@ class Query {
         return this
     }
 
-    toggle(force) {
-        return this.each(node => {
-            let prev = node.style.display
-            let dsp  = getComputedStyle(node).display
-            let isHidden = (prev == 'none' || dsp == 'none')
-            if (isHidden && (force == null || force === true)) { // show
-                let def = node instanceof HTMLTableRowElement
-                    ? 'table-row'
-                    : node instanceof HTMLTableCellElement
-                        ? 'table-cell'
-                        : 'block'
-                node.style.display = node._mQuery?.prevDisplay ?? (prev == dsp && dsp != 'none' ? '' : def)
-                this._save(node, 'prevDisplay', null)
-            }
-            if (!isHidden && (force == null || force === false)) { // hide
-                if (dsp != 'none') this._save(node, 'prevDisplay', dsp)
-                node.style.setProperty('display', 'none')
-            }
+    toggleClass(classes, force) {
+        // split by comma or space
+        if (typeof classes == 'string') classes = classes.split(/[,\s]+/)
+        this.each(node => {
+            let classes2 = classes
+            // if not defined, remove all classes
+            if (classes2 == null && force === false) classes2 = Array.from(node.classList)
+            classes2.forEach(className => {
+                if (className !== '') {
+                    let act = 'toggle'
+                    if (force != null) act = force ? 'add' : 'remove'
+                    node.classList[act](className)
+                }
+            })
         })
+        return this
     }
 
     hasClass(classes) {
@@ -532,7 +522,7 @@ class Query {
                 let data = Object.assign({}, this[0].dataset)
                 Object.keys(data).forEach(key => {
                     if (data[key].startsWith('[') || data[key].startsWith('{')) {
-                        try { data[key] = JSON.parse(data[key]) } catch(e) {}
+                        try { data[key] = JSON.parse(data[key]) } catch (e) {}
                     }
                 })
                 return key ? data[key] : data
@@ -555,7 +545,6 @@ class Query {
         if (typeof key == 'string') key = key.split(/[,\s]+/)
         this.each(node => {
             key.forEach(k => { delete node.dataset[k] })
-
         })
         return this
     }
@@ -588,6 +577,7 @@ class Query {
             }
         })
     }
+
     empty() {
         return this.html('')
     }
@@ -626,6 +616,6 @@ let query = function (selector, context) {
     }
 }
 // str -> doc-fragment
-query.html = (str) => { let frag = Query._fragment(str); return query(frag.children, frag)  }
+query.html = (str) => { let frag = Query._fragment(str); return query(frag.children, frag) }
 query.version = Query.version
 export { query as $, query as default, query, Query }
