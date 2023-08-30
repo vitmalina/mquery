@@ -1,9 +1,8 @@
-/* mQuery 0.7 (nightly) (4/18/2023, 10:07:39 AM), vitmalina@gmail.com */
+/* mQuery 0.7 (nightly) (8/29/2023, 6:37:52 PM), vitmalina@gmail.com */
 class Query {
-    static version = 0.7
-    constructor(selector, context, previous) {
+    static version = 0.8
+    constructor(selector, context) {
         this.context = context ?? document
-        this.previous = previous ?? null
         let nodes = []
         if (Array.isArray(selector)) {
             nodes = selector
@@ -53,7 +52,7 @@ class Query {
             scNode.text = txtNode.text
             let attrs = txtNode.attributes
             for (let i = 0; i < attrs.length; i++) {
-                scNode.setAttribute(attrs[i].name, attrs[i].value);
+                scNode.setAttribute(attrs[i].name, attrs[i].value)
             }
             return scNode
         }
@@ -69,18 +68,18 @@ class Query {
     }
     static _fixProp(name) {
         let fixes = {
-            cellpadding: "cellPadding",
-            cellspacing: "cellSpacing",
-            class: "className",
-            colspan: "colSpan",
-            contenteditable: "contentEditable",
-            for: "htmlFor",
-            frameborder: "frameBorder",
-            maxlength: "maxLength",
-            readonly: "readOnly",
-            rowspan: "rowSpan",
-            tabindex: "tabIndex",
-            usemap: "useMap"
+            cellpadding: 'cellPadding',
+            cellspacing: 'cellSpacing',
+            class: 'className',
+            colspan: 'colSpan',
+            contenteditable: 'contentEditable',
+            for: 'htmlFor',
+            frameborder: 'frameBorder',
+            maxlength: 'maxLength',
+            readonly: 'readOnly',
+            rowspan: 'rowSpan',
+            tabindex: 'tabIndex',
+            usemap: 'useMap'
         }
         return fixes[name] ? fixes[name] : name
     }
@@ -120,7 +119,7 @@ class Query {
             throw new Error(`Incorrect argument for "${method}(html)". It expects one string argument.`)
         }
         if (method == 'replaceWith') {
-            self = new Query(nodes, this.context, this) // must return a new collection
+            self = new Query(nodes, this.context) // must return a new collection
         }
         return self
     }
@@ -132,7 +131,7 @@ class Query {
         } else if (value != null) {
             node._mQuery[name] = value
         } else {
-            delete node._mQuery[name];
+            delete node._mQuery[name]
         }
     }
     get(index) {
@@ -150,7 +149,7 @@ class Query {
         if (index < 0) index = this.length + index
         let nodes = [this[index]]
         if (nodes[0] == null) nodes = []
-        return new Query(nodes, this.context, this) // must return a new collection
+        return new Query(nodes, this.context) // must return a new collection
     }
     then(fun) {
         let ret = fun(this)
@@ -164,7 +163,7 @@ class Query {
                 nodes.push(...nn)
             }
         })
-        return new Query(nodes, this.context, this) // must return a new collection
+        return new Query(nodes, this.context) // must return a new collection
     }
     filter(selector) {
         let nodes = []
@@ -176,7 +175,7 @@ class Query {
                 nodes.push(node)
             }
         })
-        return new Query(nodes, this.context, this) // must return a new collection
+        return new Query(nodes, this.context) // must return a new collection
     }
     next() {
         let nodes = []
@@ -184,7 +183,7 @@ class Query {
             let nn = node.nextElementSibling
             if (nn) { nodes.push(nn) }
         })
-        return new Query(nodes, this.context, this) // must return a new collection
+        return new Query(nodes, this.context) // must return a new collection
     }
     prev() {
         let nodes = []
@@ -192,7 +191,7 @@ class Query {
             let nn = node.previousElementSibling
             if (nn) { nodes.push(nn)}
         })
-        return new Query(nodes, this.context, this) // must return a new collection
+        return new Query(nodes, this.context) // must return a new collection
     }
     shadow(selector) {
         let nodes = []
@@ -200,7 +199,7 @@ class Query {
             // select shadow root if available
             if (node.shadowRoot) nodes.push(node.shadowRoot)
         })
-        let col = new Query(nodes, this.context, this)
+        let col = new Query(nodes, this.context)
         return selector ? col.find(selector) : col
     }
     closest(selector) {
@@ -211,7 +210,7 @@ class Query {
                 nodes.push(nn)
             }
         })
-        return new Query(nodes, this.context, this) // must return a new collection
+        return new Query(nodes, this.context) // must return a new collection
     }
     host(all) {
         let nodes = []
@@ -231,7 +230,7 @@ class Query {
         this.each(node => {
             fun(node)
         })
-        return new Query(nodes, this.context, this) // must return a new collection
+        return new Query(nodes, this.context) // must return a new collection
     }
     parent(selector) {
         return this.parents(selector, true)
@@ -249,12 +248,12 @@ class Query {
         this.each(node => {
             if (node.parentNode) add(node.parentNode)
         })
-        let col = new Query(nodes, this.context, this)
+        let col = new Query(nodes, this.context)
         return selector ? col.filter(selector) : col
     }
     add(more) {
         let nodes = more instanceof Query ? more.nodes : (Array.isArray(more) ? more : [more])
-        return new Query(this.nodes.concat(nodes), this.context, this) // must return a new collection
+        return new Query(this.nodes.concat(nodes), this.context) // must return a new collection
     }
     each(func) {
         this.nodes.forEach((node, ind) => { func(node, ind, this) })
@@ -298,7 +297,7 @@ class Query {
                             .map(a => {
                                 return a.split(':').map(a => a.trim()) // trim strings
                             })
-                        )
+                    )
                 }
             } else {
                 return undefined
@@ -325,25 +324,22 @@ class Query {
         this.toggleClass(classes, false)
         return this
     }
-    toggle(force) {
-        return this.each(node => {
-            let prev = node.style.display
-            let dsp  = getComputedStyle(node).display
-            let isHidden = (prev == 'none' || dsp == 'none')
-            if (isHidden && (force == null || force === true)) { // show
-                let def = node instanceof HTMLTableRowElement
-                    ? 'table-row'
-                    : node instanceof HTMLTableCellElement
-                        ? 'table-cell'
-                        : 'block'
-                node.style.display = node._mQuery?.prevDisplay ?? (prev == dsp && dsp != 'none' ? '' : def)
-                this._save(node, 'prevDisplay', null)
-            }
-            if (!isHidden && (force == null || force === false)) { // hide
-                if (dsp != 'none') this._save(node, 'prevDisplay', dsp)
-                node.style.setProperty('display', 'none')
-            }
+    toggleClass(classes, force) {
+        // split by comma or space
+        if (typeof classes == 'string') classes = classes.split(/[,\s]+/)
+        this.each(node => {
+            let classes2 = classes
+            // if not defined, remove all classes
+            if (classes2 == null && force === false) classes2 = Array.from(node.classList)
+            classes2.forEach(className => {
+                if (className !== '') {
+                    let act = 'toggle'
+                    if (force != null) act = force ? 'add' : 'remove'
+                    node.classList[act](className)
+                }
+            })
         })
+        return this
     }
     hasClass(classes) {
         // split by comma or space
@@ -494,7 +490,7 @@ class Query {
                 let data = Object.assign({}, this[0].dataset)
                 Object.keys(data).forEach(key => {
                     if (data[key].startsWith('[') || data[key].startsWith('{')) {
-                        try { data[key] = JSON.parse(data[key]) } catch(e) {}
+                        try { data[key] = JSON.parse(data[key]) } catch (e) {}
                     }
                 })
                 return key ? data[key] : data
@@ -549,7 +545,11 @@ class Query {
         return this.html('')
     }
     html(html) {
-        return this.prop('innerHTML', html)
+        if (html instanceof HTMLElement) {
+            return this.empty().append(html)
+        } else {
+            return this.prop('innerHTML', html)
+        }
     }
     text(text) {
         return this.prop('textContent', text)
@@ -578,6 +578,6 @@ let query = function (selector, context) {
     }
 }
 // str -> doc-fragment
-query.html = (str) => { let frag = Query._fragment(str); return query(frag.children, frag)  }
+query.html = (str) => { let frag = Query._fragment(str); return query(frag.children, frag) }
 query.version = Query.version
 export { query as $, query as default, query, Query }
